@@ -187,7 +187,7 @@ class ScoutUpdateCommandTest extends TestCase
         $searchClient = $model->searchableUsing();
 
         $searchClient->waitForTasks(
-            $searchClient->getTasks((new TasksQuery())->setStatus(['processing']))->getResults()
+            array_column($searchClient->getTasks((new TasksQuery())->setStatus(['processing']))->getResults(), 'uid')
         );
     }
 
