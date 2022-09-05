@@ -30,6 +30,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Setup Meilisearch container
+        run: docker run -d -p 7700:7700 getmeili/meilisearch:latest
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -52,9 +55,6 @@ jobs:
         run: |
           composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
           composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest
-
-      - name: Setup Meilisearch container
-        run: docker run -d -p 7700:7700 getmeili/meilisearch:latest
 
       - name: Execute tests
         run: |
