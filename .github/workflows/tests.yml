@@ -11,19 +11,13 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         php: [ 7.4, 8.0, 8.1 ]
-        laravel: [ 6.*, 8.*, 9.* ]
+        laravel: [ 8.*, 9.* ]
         dependency-version: [ prefer-stable ]
         exclude:
-          # PHP 8.1 is not compatible with Laravel 6!
-          - laravel: 6.*
-            php: 8.1
           # PHP 7 is not compatible with Laravel 9 and future releases!
           - laravel: 9.*
             php: 7.4
         include:
-          - laravel: 6.*
-            testbench: 4.*
-
           - laravel: 8.*
             testbench: 6.*
           
@@ -65,7 +59,7 @@ jobs:
       - name: Execute tests
         run: |
           cp phpunit.coverage.dist.xml phpunit.xml || true
-          vendor/bin/phpunit
+          vendor/bin/phpunit $( [[ '${{ matrix.php }}' != *'8'* ]] && printf %s '--exclude-group needsPhp8' )
 
       - name: Deploy coverage to codacy
         uses: codacy/codacy-coverage-reporter-action@v1

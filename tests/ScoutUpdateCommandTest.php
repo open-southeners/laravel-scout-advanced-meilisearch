@@ -67,6 +67,9 @@ class ScoutUpdateCommandTest extends TestCase
         Tag::makeAllSearchable();
     }
 
+    /**
+     * @group needsPhp8
+     */
     public function testScoutUpdateCommandChangesFiltersAndSortsUsingAttributeAtMethodLevel()
     {
         $command = $this->artisan('scout:update', [
@@ -90,6 +93,9 @@ class ScoutUpdateCommandTest extends TestCase
         $this->assertEmpty(array_diff($postSearchIndex->getSortableAttributes(), ['slug']));
     }
 
+    /**
+     * @group needsPhp8
+     */
     public function testScoutUpdateCommandChangesFiltersAndSortsUsingAttributeAtClassLevel()
     {
         $command = $this->artisan('scout:update', [

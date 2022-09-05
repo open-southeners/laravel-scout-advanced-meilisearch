@@ -19,17 +19,17 @@
         }
     ],
     "require": {
-        "php": "^7.2|^8.0|^8.1",
-        "illuminate/console": "^6.0|^8.0|^9.0",
-        "laravel/scout": "^8.0|^9.0"
+        "php": "^7.4|^8.0",
+        "illuminate/console": "^8.0|^9.0",
+        "laravel/scout": "^9.0"
     },
     "require-dev": {
         "guzzlehttp/guzzle": "^7.2",
         "meilisearch/meilisearch-php": "^0.23.0",
         "nunomaduro/larastan": "^1.0",
         "phpstan/phpstan": "^1.0",
-        "phpunit/phpunit": "^7.0|^9.0",
-        "orchestra/testbench": "^4.0|^6.0|^7.0"
+        "phpunit/phpunit": "^9.0",
+        "orchestra/testbench": "^6.0|^7.0"
     },
     "autoload": {
         "psr-4": {
