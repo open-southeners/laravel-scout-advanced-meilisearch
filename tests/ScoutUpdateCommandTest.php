@@ -13,6 +13,8 @@ class ScoutUpdateCommandTest extends TestCase
     {
         parent::setUp();
 
+        $this->withoutExceptionHandling();
+
         Post::insert([
             [
                 'title' => 'Hello world',
