@@ -58,15 +58,11 @@ jobs:
 
       - name: Execute tests
         if: matrix.php != '8.1' && matrix.laravel != '9.*'
-        run: |
-          cp phpunit.dist.xml phpunit.xml || true
-          vendor/bin/phpunit $( [[ '${{ matrix.php }}' != *'8'* ]] && printf %s '--exclude-group needsPhp8' )
+        run: vendor/bin/phpunit -c phpunit.dist.xml $( [[ '${{ matrix.php }}' != *'8'* ]] && printf %s '--exclude-group needsPhp8' )
       
       - name: Execute tests with coverage
         if: matrix.php == '8.1' && matrix.laravel == '9.*'
-        run: |
-          cp phpunit.coverage.dist.xml phpunit.xml || true
-          vendor/bin/phpunit
+        run: vendor/bin/phpunit -c phpunit.coverage.dist.xml
 
       - name: Deploy coverage to codacy
         uses: codacy/codacy-coverage-reporter-action@v1
