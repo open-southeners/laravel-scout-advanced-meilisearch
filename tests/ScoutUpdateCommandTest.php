@@ -43,7 +43,7 @@ class ScoutUpdateCommandTest extends TestCase
 
         $command->assertSuccessful();
 
-        $command->expectsOutput("Updated attributes adding filterables and/or sortables for index {$postSearchIndex->getUid()} [".Post::class."].");
+        $command->expectsOutput("Updated attributes adding filterables and/or sortables for index {$postSearchIndex->getUid()} [".Post::class.'].');
 
         $command->execute();
 
@@ -68,7 +68,7 @@ class ScoutUpdateCommandTest extends TestCase
                 'password' => '1234',
             ],
         ]);
-        
+
         $userInstance = new User;
 
         $userSearchIndex = $this->createIndex($userInstance);
@@ -81,7 +81,7 @@ class ScoutUpdateCommandTest extends TestCase
 
         $command->assertSuccessful();
 
-        $command->expectsOutput("Updated attributes adding filterables and/or sortables for index {$userSearchIndex->getUid()} [".User::class."].");
+        $command->expectsOutput("Updated attributes adding filterables and/or sortables for index {$userSearchIndex->getUid()} [".User::class.'].');
 
         $command->execute();
 
@@ -118,7 +118,7 @@ class ScoutUpdateCommandTest extends TestCase
 
         $command->assertSuccessful();
 
-        $command->expectsOutput("Updated attributes adding filterables and/or sortables for index {$tagSearchIndex->getUid()} [".Tag::class."].");
+        $command->expectsOutput("Updated attributes adding filterables and/or sortables for index {$tagSearchIndex->getUid()} [".Tag::class.'].');
 
         $command->execute();
 
@@ -128,8 +128,8 @@ class ScoutUpdateCommandTest extends TestCase
 
     /**
      * Create search index for model instance.
-     * 
-     * @param \Laravel\Scout\Searchable $model
+     *
+     * @param  \Laravel\Scout\Searchable  $model
      * @return \MeiliSearch\Endpoints\Indexes
      */
     private function createIndex($model)
