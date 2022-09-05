@@ -49,8 +49,8 @@ class ScoutUpdateCommandTest extends TestCase
 
         $command->execute();
 
-        $this->assertEmpty(array_diff($postSearchIndex->getFilterableAttributes(), ['title']));
-        $this->assertEmpty(array_diff($postSearchIndex->getSortableAttributes(), ['slug']));
+        $this->assertEmpty(array_diff(['title'], $postSearchIndex->getFilterableAttributes()));
+        $this->assertEmpty(array_diff(['slug'], $postSearchIndex->getSortableAttributes()));
     }
 
     /**
@@ -87,8 +87,8 @@ class ScoutUpdateCommandTest extends TestCase
 
         $command->execute();
 
-        $this->assertEmpty(array_diff($userSearchIndex->getFilterableAttributes(), ['email']));
-        $this->assertEmpty(array_diff($userSearchIndex->getSortableAttributes(), ['name']));
+        $this->assertEmpty(array_diff(['email'], $userSearchIndex->getFilterableAttributes()));
+        $this->assertEmpty(array_diff(['name'], $userSearchIndex->getSortableAttributes()));
     }
 
     public function testScoutUpdateCommandChangesFiltersAndSortsUsingMethods()
@@ -124,8 +124,8 @@ class ScoutUpdateCommandTest extends TestCase
 
         $command->execute();
 
-        $this->assertEmpty(array_diff($tagSearchIndex->getFilterableAttributes(), ['name']));
-        $this->assertEmpty(array_diff($tagSearchIndex->getSortableAttributes(), ['slug']));
+        $this->assertEmpty(array_diff(['name'], $tagSearchIndex->getFilterableAttributes()));
+        $this->assertEmpty(array_diff(['slug'], $tagSearchIndex->getSortableAttributes()));
     }
 
     public function testScoutUpdateCommandWhenModelIsNotSearchableReturnsError()

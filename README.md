@@ -65,9 +65,9 @@ class Tag extends Model
 ```php
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Scout\Searchable;
-use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutMeilisearchAttributes;
+use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableAttributes;
 
-#[ScoutMeilisearchAttributes(filterable: ['email'], sortable: ['name'])]
+#[ScoutSearchableAttributes(filterable: ['email'], sortable: ['name'])]
 class User extends Authenticatable
 {
     use Searchable;

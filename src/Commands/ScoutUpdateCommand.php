@@ -7,6 +7,7 @@ use Laravel\Scout\Searchable;
 use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableAttributes;
 use ReflectionAttribute;
 use ReflectionMethod;
+use ReflectionClass;
 
 class ScoutUpdateCommand extends Command
 {
@@ -81,20 +82,18 @@ class ScoutUpdateCommand extends Command
             return false;
         }
 
-        $reflectedMethod = new ReflectionMethod($model, 'toSearchableArray');
+        $modelSearchableAttributes = (new ReflectionClass($model))->getAttributes(ScoutSearchableAttributes::class);
+        
+        if (empty($modelSearchableAttributes)) {
+            $modelSearchableAttributes = (new ReflectionMethod($model, 'toSearchableArray'))
+                ->getAttributes(ScoutSearchableAttributes::class);
+        }
 
-        $reflectedMethodAttributes = array_filter(
-            $reflectedMethod->getAttributes(),
-            function (ReflectionAttribute $reflectedAttribute) {
-                return $reflectedAttribute->getName() === ScoutSearchableAttributes::class;
-            }
-        );
-
-        if (empty($reflectedMethodAttributes)) {
+        if (empty($modelSearchableAttributes)) {
             return false;
         }
 
-        return head($reflectedMethodAttributes)->newInstance();
+        return head($modelSearchableAttributes)->newInstance();
     }
 
     /**

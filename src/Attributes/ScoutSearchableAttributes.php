@@ -5,7 +5,7 @@ namespace OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes;
 use Attribute;
 
 #[Attribute]
-final class ScoutSearchableAttributes
+class ScoutSearchableAttributes
 {
     public function __construct(
         public array $attributes = [],
