@@ -8,6 +8,90 @@ Advanced Meilisearch integration with Laravel Scout
 
 ## Getting started
 
+Install the package using Composer:
+
 ```
 composer require open-southeners/laravel-scout-advaced-meilisearch
 ```
+
+Then configure your already searchable models like so:
+
+```php
+use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Searchable;
+
+class Tag extends Model
+{
+    use Searchable;
+
+    /**
+     * Get the indexable data array for the model.
+     *
+     * @return array
+     */
+    public function toSearchableArray()
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'slug' => $this->slug,
+        ];
+    }
+
+    /**
+     * Get the search sortable attributes array for the model.
+     *
+     * @return array<string>
+     */
+    public function searchableFilters(): array
+    {
+        return ['name'];
+    }
+
+    /**
+     * Get the search sortable attributes array for the model.
+     *
+     * @return array<string>
+     */
+    public function searchableSorts(): array
+    {
+        return ['slug'];
+    }
+}
+```
+
+**In case your project is using PHP 8**, you can do this by attributes on the model class or the `toSearchableArray` method:
+
+```php
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Scout\Searchable;
+use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutMeilisearchAttributes;
+
+#[ScoutMeilisearchAttributes(filterable: ['email'], sortable: ['name'])]
+class User extends Authenticatable
+{
+    use Searchable;
+
+    /**
+     * Get the indexable data array for the model.
+     *
+     * @return array
+     */
+    public function toSearchableArray()
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'email' => $this->email,
+        ];
+    }
+}
+```
+
+And finally run the following artisan command:
+
+```bash
+php artisan scout:update "App\Models\User"
+```
+
+Remember to check [the official documentation about these filters and sorts](https://docs.meilisearch.com/learn/getting_started/filtering_and_sorting.html).
