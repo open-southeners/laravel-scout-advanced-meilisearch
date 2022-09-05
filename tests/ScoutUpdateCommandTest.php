@@ -139,7 +139,7 @@ class ScoutUpdateCommandTest extends TestCase
 
         $response = $searchClient->createIndex($model->searchableAs());
 
-        $searchClient->waitForTask($response['uid']);
+        $searchClient->waitForTask($response['taskUid'] ?? $response['uid']);
 
         return $searchClient->getIndex($response['indexUid']);
     }
