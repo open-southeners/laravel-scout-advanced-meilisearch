@@ -2,9 +2,11 @@
 
 namespace OpenSoutheners\LaravelScoutAdvancedMeilisearch\Tests;
 
+use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Tests\Fixtures\Comment;
 use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Tests\Fixtures\Post;
 use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Tests\Fixtures\Tag;
 use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Tests\Fixtures\User;
+use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Tests\Fixtures\Country;
 
 class ScoutUpdateCommandTest extends TestCase
 {
@@ -124,6 +126,28 @@ class ScoutUpdateCommandTest extends TestCase
 
         $this->assertEmpty(array_diff($tagSearchIndex->getFilterableAttributes(), ['name']));
         $this->assertEmpty(array_diff($tagSearchIndex->getSortableAttributes(), ['slug']));
+    }
+
+    public function testScoutUpdateCommandWhenModelIsNotSearchableReturnsError()
+    {
+        $command = $this->artisan('scout:update', [
+            'model' => Comment::class,
+        ]);
+
+        $command->assertFailed();
+
+        $command->expectsOutput('This model is not searchable.');
+    }
+    
+    public function testScoutUpdateCommandWhenModelIsNotSearchableThroughMeilisearchReturnsError()
+    {
+        $command = $this->artisan('scout:update', [
+            'model' => Country::class,
+        ]);
+
+        $command->assertFailed();
+
+        $command->expectsOutput('Meilisearch is the only supported engine for the sorts and/or filters.');
     }
 
     /**

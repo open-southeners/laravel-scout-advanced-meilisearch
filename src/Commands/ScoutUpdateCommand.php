@@ -33,6 +33,15 @@ class ScoutUpdateCommand extends Command
     {
         $modelClass = $this->argument('model');
 
+        if (
+            ! class_exists($modelClass)
+            || ! in_array(Searchable::class, class_uses($modelClass))
+        ) {
+            $this->error('This model is not searchable.');
+
+            return 1;
+        }
+
         /** @var \Laravel\Scout\Searchable $model */
         $model = new $modelClass;
 
@@ -40,17 +49,7 @@ class ScoutUpdateCommand extends Command
         $modelSearchEngine = $model->searchableUsing();
 
         if (get_class($modelSearchEngine) !== 'Laravel\Scout\Engines\MeiliSearchEngine') {
-            $this->error('Meilisearch is the only supported engine for the filters.');
-
-            return 1;
-        }
-
-        if (
-            ! class_exists($modelClass)
-            || ! in_array(Searchable::class, class_uses($modelClass))
-            // || ! method_exists($modelClass, 'toSearchableArray')
-        ) {
-            $this->error('This model does not have any filterable attribute configured or is not searchable.');
+            $this->error('Meilisearch is the only supported engine for the sorts and/or filters.');
 
             return 2;
         }
