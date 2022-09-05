@@ -7,6 +7,7 @@ use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Tests\Fixtures\Country;
 use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Tests\Fixtures\Post;
 use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Tests\Fixtures\Tag;
 use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Tests\Fixtures\User;
+use MeiliSearch\Contracts\TasksQuery;
 
 class ScoutUpdateCommandTest extends TestCase
 {
@@ -49,8 +50,16 @@ class ScoutUpdateCommandTest extends TestCase
 
         $command->execute();
 
-        $this->assertEmpty(array_diff(['title'], $postSearchIndex->getFilterableAttributes()));
-        $this->assertEmpty(array_diff(['slug'], $postSearchIndex->getSortableAttributes()));
+        $this->waitForAllSearchTasks($postInstance);
+
+        $postSearchFilterableAttributes = $postSearchIndex->getFilterableAttributes();
+        $postSearchSortableAttributes = $postSearchIndex->getSortableAttributes();
+
+        $this->assertNotEmpty($postSearchFilterableAttributes);
+        $this->assertNotEmpty($postSearchSortableAttributes);
+
+        $this->assertEmpty(array_diff(['title'], $postSearchFilterableAttributes));
+        $this->assertEmpty(array_diff(['slug'], $postSearchSortableAttributes));
     }
 
     /**
@@ -87,8 +96,16 @@ class ScoutUpdateCommandTest extends TestCase
 
         $command->execute();
 
-        $this->assertEmpty(array_diff(['email'], $userSearchIndex->getFilterableAttributes()));
-        $this->assertEmpty(array_diff(['name'], $userSearchIndex->getSortableAttributes()));
+        $this->waitForAllSearchTasks($userInstance);
+
+        $userSearchFilterableAttributes = $userSearchIndex->getFilterableAttributes();
+        $userSearchSortableAttributes = $userSearchIndex->getSortableAttributes();
+
+        $this->assertNotEmpty($userSearchFilterableAttributes);
+        $this->assertNotEmpty($userSearchSortableAttributes);
+
+        $this->assertEmpty(array_diff(['email'], $userSearchFilterableAttributes));
+        $this->assertEmpty(array_diff(['name'], $userSearchSortableAttributes));
     }
 
     public function testScoutUpdateCommandChangesFiltersAndSortsUsingMethods()
@@ -124,8 +141,16 @@ class ScoutUpdateCommandTest extends TestCase
 
         $command->execute();
 
-        $this->assertEmpty(array_diff(['name'], $tagSearchIndex->getFilterableAttributes()));
-        $this->assertEmpty(array_diff(['slug'], $tagSearchIndex->getSortableAttributes()));
+        $this->waitForAllSearchTasks($tagInstance);
+
+        $tagSearchFilterableAttributes = $tagSearchIndex->getFilterableAttributes();
+        $tagSearchSortableAttributes = $tagSearchIndex->getSortableAttributes();
+
+        $this->assertNotEmpty($tagSearchFilterableAttributes);
+        $this->assertNotEmpty($tagSearchSortableAttributes);
+
+        $this->assertEmpty(array_diff(['name'], $tagSearchFilterableAttributes));
+        $this->assertEmpty(array_diff(['slug'], $tagSearchSortableAttributes));
     }
 
     public function testScoutUpdateCommandWhenModelIsNotSearchableReturnsError()
@@ -148,6 +173,22 @@ class ScoutUpdateCommandTest extends TestCase
         $command->assertFailed();
 
         $command->expectsOutput('Meilisearch is the only supported engine for the sorts and/or filters.');
+    }
+
+    /**
+     * Wait for all search engine tasks to complete for the given model instance.
+     *
+     * @param  \Laravel\Scout\Searchable  $model
+     * @return void
+     */
+    private function waitForAllSearchTasks($model)
+    {
+        /** @var \Laravel\Scout\Engines\MeiliSearchEngine|\Meilisearch\Client $searchClient */
+        $searchClient = $model->searchableUsing();
+
+        $searchClient->waitForTasks(
+            $searchClient->getTasks((new TasksQuery())->setStatus(['processing']))->getResults()
+        );
     }
 
     /**
