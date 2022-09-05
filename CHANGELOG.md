@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.2] - 2022-09-05
+
+### Fixed
+
+- PHP 8 attributes not working
+
 ## [1.0.1] - 2022-09-05
 
 ### Fixed
