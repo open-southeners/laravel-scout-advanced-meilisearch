@@ -26,7 +26,7 @@
     "require-dev": {
         "guzzlehttp/guzzle": "^7.1",
         "http-interop/http-factory-guzzle": "^1.0",
-        "meilisearch/meilisearch-php": "^0.23.0",
+        "meilisearch/meilisearch-php": "^0.24",
         "nunomaduro/larastan": "^1.0",
         "phpstan/phpstan": "^1.0",
         "phpunit/phpunit": "^9.0",
