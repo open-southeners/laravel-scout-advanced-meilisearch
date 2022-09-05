@@ -2,7 +2,6 @@
 
 namespace OpenSoutheners\LaravelScoutAdvancedMeilisearch\Tests;
 
-use Illuminate\Support\Facades\Artisan;
 use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Tests\Fixtures\Post;
 use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Tests\Fixtures\Tag;
 use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Tests\Fixtures\User;
@@ -34,12 +33,8 @@ class ScoutUpdateCommandTest extends TestCase
 
         $postInstance = new Post;
 
-        /** @var \Laravel\Scout\Engines\MeiliSearchEngine|\Meilisearch\Client $postSearchEngine */
-        $postSearchEngine = $postInstance->searchableUsing();
+        $postSearchIndex = $this->createIndex($postInstance);
 
-        $postSearchIndexKey = $postInstance->searchableAs();
-
-        Artisan::call('scout:index', ['name' => $postSearchIndexKey]);
         Post::makeAllSearchable();
 
         $command = $this->artisan('scout:update', [
@@ -48,11 +43,9 @@ class ScoutUpdateCommandTest extends TestCase
 
         $command->assertSuccessful();
 
-        $command->expectsOutput("Updated attributes adding filterables and/or sortables for index posts [".Post::class."].");
+        $command->expectsOutput("Updated attributes adding filterables and/or sortables for index {$postSearchIndex->getUid()} [".Post::class."].");
 
         $command->execute();
-
-        $postSearchIndex = $postSearchEngine->index($postSearchIndexKey);
 
         $this->assertEmpty(array_diff($postSearchIndex->getFilterableAttributes(), ['title']));
         $this->assertEmpty(array_diff($postSearchIndex->getSortableAttributes(), ['slug']));
@@ -78,12 +71,8 @@ class ScoutUpdateCommandTest extends TestCase
         
         $userInstance = new User;
 
-        /** @var \Laravel\Scout\Engines\MeiliSearchEngine|\Meilisearch\Client $userSearchEngine */
-        $userSearchEngine = $userInstance->searchableUsing();
+        $userSearchIndex = $this->createIndex($userInstance);
 
-        $userSearchIndexKey = $userInstance->searchableAs();
-
-        Artisan::call('scout:index', ['name' => $userSearchIndexKey]);
         User::makeAllSearchable();
 
         $command = $this->artisan('scout:update', [
@@ -92,11 +81,9 @@ class ScoutUpdateCommandTest extends TestCase
 
         $command->assertSuccessful();
 
-        $command->expectsOutput("Updated attributes adding filterables and/or sortables for index users [".User::class."].");
+        $command->expectsOutput("Updated attributes adding filterables and/or sortables for index {$userSearchIndex->getUid()} [".User::class."].");
 
         $command->execute();
-
-        $userSearchIndex = $userSearchEngine->index($userSearchIndexKey);
 
         $this->assertEmpty(array_diff($userSearchIndex->getFilterableAttributes(), ['email']));
         $this->assertEmpty(array_diff($userSearchIndex->getSortableAttributes(), ['name']));
@@ -121,12 +108,8 @@ class ScoutUpdateCommandTest extends TestCase
 
         $tagInstance = new Tag;
 
-        /** @var \Laravel\Scout\Engines\MeiliSearchEngine|\Meilisearch\Client $tagSearchEngine */
-        $tagSearchEngine = $tagInstance->searchableUsing();
+        $tagSearchIndex = $this->createIndex($tagInstance);
 
-        $tagSearchIndexKey = $tagInstance->searchableAs();
-
-        Artisan::call('scout:index', ['name' => $tagSearchIndexKey]);
         Tag::makeAllSearchable();
 
         $command = $this->artisan('scout:update', [
@@ -135,13 +118,29 @@ class ScoutUpdateCommandTest extends TestCase
 
         $command->assertSuccessful();
 
-        $command->expectsOutput("Updated attributes adding filterables and/or sortables for index tags [".Tag::class."].");
+        $command->expectsOutput("Updated attributes adding filterables and/or sortables for index {$tagSearchIndex->getUid()} [".Tag::class."].");
 
         $command->execute();
 
-        $tagSearchIndex = $tagSearchEngine->index($tagSearchIndexKey);
-
         $this->assertEmpty(array_diff($tagSearchIndex->getFilterableAttributes(), ['name']));
         $this->assertEmpty(array_diff($tagSearchIndex->getSortableAttributes(), ['slug']));
+    }
+
+    /**
+     * Create search index for model instance.
+     * 
+     * @param \Laravel\Scout\Searchable $model
+     * @return \MeiliSearch\Endpoints\Indexes
+     */
+    private function createIndex($model)
+    {
+        /** @var \Laravel\Scout\Engines\MeiliSearchEngine|\Meilisearch\Client $searchClient */
+        $searchClient = $model->searchableUsing();
+
+        $response = $searchClient->createIndex($model->searchableAs());
+
+        $searchClient->waitForTask($response['uid']);
+
+        return $searchClient->getIndex($response['indexUid']);
     }
 }
