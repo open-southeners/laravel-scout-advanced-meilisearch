@@ -31,7 +31,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Setup Meilisearch container
-        run: docker run -d -p 7700:7700 getmeili/meilisearch:latest
+        run: docker run -d -p 7700:7700 getmeili/meilisearch:latest meilisearch --no-analytics
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -54,7 +54,7 @@ jobs:
       - name: Install dependencies
         run: |
           composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
-          composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest
+          composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
 
       - name: Execute tests
         if: matrix.php != '8.1' && matrix.laravel != '9.*'
