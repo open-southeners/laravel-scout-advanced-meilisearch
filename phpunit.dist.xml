@@ -28,6 +28,5 @@
     <env name="DB_DATABASE" value=":memory:" force="true"/>
     <env name="SCOUT_DRIVER" value="meilisearch" force="true"/>
     <env name="MEILISEARCH_HOST" value="http://localhost:7700" force="true"/>
-    <env name="MEILISEARCH_KEY" value="masterKey" force="true"/>
   </php>
 </phpunit>
