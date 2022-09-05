@@ -4,7 +4,6 @@ namespace OpenSoutheners\LaravelScoutAdvancedMeilisearch\Commands;
 
 use Illuminate\Console\Command;
 use Laravel\Scout\Searchable;
-use function OpenSoutheners\LaravelHelpers\Classes\class_use;
 use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableAttributes;
 use ReflectionAttribute;
 use ReflectionMethod;
@@ -48,7 +47,7 @@ class ScoutUpdateCommand extends Command
 
         if (
             ! class_exists($modelClass)
-            || ! class_use($modelClass, Searchable::class)
+            || ! in_array(Searchable::class, class_uses($modelClass))
             // || ! method_exists($modelClass, 'toSearchableArray')
         ) {
             $this->error('This model does not have any filterable attribute configured or is not searchable.');
