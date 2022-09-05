@@ -9,12 +9,11 @@ use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Tests\Fixtures\User;
 
 class ScoutUpdateCommandTest extends TestCase
 {
-    protected function setUp(): void
+    /**
+     * @group needsPhp8
+     */
+    public function testScoutUpdateCommandChangesFiltersAndSortsUsingAttributeAtMethodLevel()
     {
-        parent::setUp();
-
-        $this->withoutExceptionHandling();
-
         Post::insert([
             [
                 'title' => 'Hello world',
@@ -32,48 +31,9 @@ class ScoutUpdateCommandTest extends TestCase
                 'content' => 'How to travel cheap',
             ],
         ]);
-
-        User::insert([
-            [
-                'name' => 'Ruben Robles',
-                'email' => 'ruben@helloworld.com',
-                'password' => '1234',
-            ],
-            [
-                'name' => 'Daniel Perez',
-                'email' => 'daniel@helloworld.com',
-                'password' => '1234',
-            ],
-        ]);
-
-        Tag::insert([
-            [
-                'name' => 'Hello world',
-                'slug' => 'hello-world',
-            ],
-            [
-                'name' => 'Traveling',
-                'email' => 'traveling',
-            ],
-            [
-                'name' => 'Cooking',
-                'email' => 'cooking',
-            ],
-        ]);
-
         Artisan::call('scout:index', ['name' => 'posts']);
-        Artisan::call('scout:index', ['name' => 'users']);
-        Artisan::call('scout:index', ['name' => 'tags']);
         Post::makeAllSearchable();
-        User::makeAllSearchable();
-        Tag::makeAllSearchable();
-    }
 
-    /**
-     * @group needsPhp8
-     */
-    public function testScoutUpdateCommandChangesFiltersAndSortsUsingAttributeAtMethodLevel()
-    {
         $command = $this->artisan('scout:update', [
             'model' => Post::class,
         ]);
@@ -100,6 +60,21 @@ class ScoutUpdateCommandTest extends TestCase
      */
     public function testScoutUpdateCommandChangesFiltersAndSortsUsingAttributeAtClassLevel()
     {
+        User::insert([
+            [
+                'name' => 'Ruben Robles',
+                'email' => 'ruben@helloworld.com',
+                'password' => '1234',
+            ],
+            [
+                'name' => 'Daniel Perez',
+                'email' => 'daniel@helloworld.com',
+                'password' => '1234',
+            ],
+        ]);
+        Artisan::call('scout:index', ['name' => 'users']);
+        User::makeAllSearchable();
+
         $command = $this->artisan('scout:update', [
             'model' => User::class,
         ]);
@@ -123,6 +98,23 @@ class ScoutUpdateCommandTest extends TestCase
 
     public function testScoutUpdateCommandChangesFiltersAndSortsUsingMethods()
     {
+        Tag::insert([
+            [
+                'name' => 'Hello world',
+                'slug' => 'hello-world',
+            ],
+            [
+                'name' => 'Traveling',
+                'email' => 'traveling',
+            ],
+            [
+                'name' => 'Cooking',
+                'email' => 'cooking',
+            ],
+        ]);
+        Artisan::call('scout:index', ['name' => 'tags']);
+        Tag::makeAllSearchable();
+
         $command = $this->artisan('scout:update', [
             'model' => Tag::class,
         ]);
