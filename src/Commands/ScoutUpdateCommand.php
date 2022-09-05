@@ -5,9 +5,8 @@ namespace OpenSoutheners\LaravelScoutAdvancedMeilisearch\Commands;
 use Illuminate\Console\Command;
 use Laravel\Scout\Searchable;
 use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableAttributes;
-use ReflectionAttribute;
-use ReflectionMethod;
 use ReflectionClass;
+use ReflectionMethod;
 
 class ScoutUpdateCommand extends Command
 {
@@ -79,11 +78,13 @@ class ScoutUpdateCommand extends Command
     public function getSearchableAttribute($model)
     {
         if (version_compare(PHP_VERSION, '8.0', '<')) {
+            // @codeCoverageIgnoreStart
             return false;
+            // @codeCoverageIgnoreEnd
         }
 
         $modelSearchableAttributes = (new ReflectionClass($model))->getAttributes(ScoutSearchableAttributes::class);
-        
+
         if (empty($modelSearchableAttributes)) {
             $modelSearchableAttributes = (new ReflectionMethod($model, 'toSearchableArray'))
                 ->getAttributes(ScoutSearchableAttributes::class);
