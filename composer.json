@@ -1,20 +1,32 @@
 {
-    "name": "packagist_package_here",
-    "description": "and_description_here",
+    "name": "open-southeners/laravel-scout-advaced-meilisearch",
+    "description": "Advanced Meilisearch integration with Laravel Scout",
     "license": "MIT",
     "keywords": [
-        "open-southeners"
+        "open-southeners",
+        "laravel",
+        "laravel-scout",
+        "meilisearch",
+        "search",
+        "filters",
+        "sorts"
     ],
     "authors": [
         {
             "name": "Ruben Robles",
-            "email": "d8vjork@outlook.com"
+            "email": "d8vjork@outlook.com",
+            "homepage": "https://d8vjork.com"
         }
     ],
     "require": {
-        "php": "^7.2|^8.0|^8.1"
+        "php": "^7.2|^8.0|^8.1",
+        "illuminate/console": "^8.0|^9.0",
+        "laravel/scout": "^9.0",
+        "open-southeners/laravel-helpers": "^0.8"
     },
     "require-dev": {
+        "laravel/pint": "^1.0",
+        "meilisearch/meilisearch-php": "^0.23.0",
         "nunomaduro/larastan": "^1.0",
         "phpstan/phpstan": "^1.0",
         "phpunit/phpunit": "^7.0|^9.0",
@@ -22,12 +34,12 @@
     },
     "autoload": {
         "psr-4": {
-            "OpenSoutheners\\PhpPackage\\": "src"
+            "OpenSoutheners\\LaravelScoutAdvancedMeilisearch\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "OpenSoutheners\\PhpPackage\\Tests\\": "tests"
+            "OpenSoutheners\\LaravelScoutAdvancedMeilisearch\\Tests\\": "tests"
         }
     },
     "config": {
@@ -36,7 +48,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "OpenSoutheners\\PhpPackage\\JsonApiServiceProvider"
+                "OpenSoutheners\\LaravelScoutAdvancedMeilisearch\\JsonApiServiceProvider"
             ]
         }
     },
