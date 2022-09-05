@@ -48,7 +48,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "OpenSoutheners\\LaravelScoutAdvancedMeilisearch\\JsonApiServiceProvider"
+                "OpenSoutheners\\LaravelScoutAdvancedMeilisearch\\ServiceProvider"
             ]
         }
     },
