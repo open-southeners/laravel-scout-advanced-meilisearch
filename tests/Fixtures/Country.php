@@ -3,8 +3,8 @@
 namespace OpenSoutheners\LaravelScoutAdvancedMeilisearch\Tests\Fixtures;
 
 use Illuminate\Database\Eloquent\Model;
-use Laravel\Scout\Searchable;
 use Laravel\Scout\EngineManager;
+use Laravel\Scout\Searchable;
 
 class Country extends Model
 {

@@ -3,10 +3,10 @@
 namespace OpenSoutheners\LaravelScoutAdvancedMeilisearch\Tests;
 
 use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Tests\Fixtures\Comment;
+use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Tests\Fixtures\Country;
 use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Tests\Fixtures\Post;
 use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Tests\Fixtures\Tag;
 use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Tests\Fixtures\User;
-use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Tests\Fixtures\Country;
 
 class ScoutUpdateCommandTest extends TestCase
 {
@@ -138,7 +138,7 @@ class ScoutUpdateCommandTest extends TestCase
 
         $command->expectsOutput('This model is not searchable.');
     }
-    
+
     public function testScoutUpdateCommandWhenModelIsNotSearchableThroughMeilisearchReturnsError()
     {
         $command = $this->artisan('scout:update', [
