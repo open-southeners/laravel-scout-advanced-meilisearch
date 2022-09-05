@@ -49,6 +49,8 @@ class ScoutUpdateCommandTest extends TestCase
 
         $command->execute();
 
+        print_r($postSearchIndex->getFilterableAttributes());
+        print_r($postSearchIndex->getSortableAttributes());
         $this->assertEmpty(array_diff(['title'], $postSearchIndex->getFilterableAttributes()));
         $this->assertEmpty(array_diff(['slug'], $postSearchIndex->getSortableAttributes()));
     }
