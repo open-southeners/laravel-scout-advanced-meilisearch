@@ -31,7 +31,15 @@ class ScoutUpdateCommandTest extends TestCase
                 'content' => 'How to travel cheap',
             ],
         ]);
-        Artisan::call('scout:index', ['name' => 'posts']);
+
+        $postInstance = new Post;
+
+        /** @var \Laravel\Scout\Engines\MeiliSearchEngine|\Meilisearch\Client $postSearchEngine */
+        $postSearchEngine = $postInstance->searchableUsing();
+
+        $postSearchIndexKey = $postInstance->searchableAs();
+
+        Artisan::call('scout:index', ['name' => $postSearchIndexKey]);
         Post::makeAllSearchable();
 
         $command = $this->artisan('scout:update', [
@@ -44,12 +52,7 @@ class ScoutUpdateCommandTest extends TestCase
 
         $command->execute();
 
-        $postInstance = new Post;
-
-        /** @var \Laravel\Scout\Engines\MeiliSearchEngine|\Meilisearch\Client $postSearchEngine */
-        $postSearchEngine = $postInstance->searchableUsing();
-
-        $postSearchIndex = $postSearchEngine->index($postInstance->searchableAs());
+        $postSearchIndex = $postSearchEngine->index($postSearchIndexKey);
 
         $this->assertEmpty(array_diff($postSearchIndex->getFilterableAttributes(), ['title']));
         $this->assertEmpty(array_diff($postSearchIndex->getSortableAttributes(), ['slug']));
@@ -72,7 +75,15 @@ class ScoutUpdateCommandTest extends TestCase
                 'password' => '1234',
             ],
         ]);
-        Artisan::call('scout:index', ['name' => 'users']);
+        
+        $userInstance = new User;
+
+        /** @var \Laravel\Scout\Engines\MeiliSearchEngine|\Meilisearch\Client $userSearchEngine */
+        $userSearchEngine = $userInstance->searchableUsing();
+
+        $userSearchIndexKey = $userInstance->searchableAs();
+
+        Artisan::call('scout:index', ['name' => $userSearchIndexKey]);
         User::makeAllSearchable();
 
         $command = $this->artisan('scout:update', [
@@ -85,12 +96,7 @@ class ScoutUpdateCommandTest extends TestCase
 
         $command->execute();
 
-        $userInstance = new User;
-
-        /** @var \Laravel\Scout\Engines\MeiliSearchEngine|\Meilisearch\Client $userSearchEngine */
-        $userSearchEngine = $userInstance->searchableUsing();
-
-        $userSearchIndex = $userSearchEngine->index($userInstance->searchableAs());
+        $userSearchIndex = $userSearchEngine->index($userSearchIndexKey);
 
         $this->assertEmpty(array_diff($userSearchIndex->getFilterableAttributes(), ['email']));
         $this->assertEmpty(array_diff($userSearchIndex->getSortableAttributes(), ['name']));
@@ -112,7 +118,15 @@ class ScoutUpdateCommandTest extends TestCase
                 'email' => 'cooking',
             ],
         ]);
-        Artisan::call('scout:index', ['name' => 'tags']);
+
+        $tagInstance = new Tag;
+
+        /** @var \Laravel\Scout\Engines\MeiliSearchEngine|\Meilisearch\Client $tagSearchEngine */
+        $tagSearchEngine = $tagInstance->searchableUsing();
+
+        $tagSearchIndexKey = $tagInstance->searchableAs();
+
+        Artisan::call('scout:index', ['name' => $tagSearchIndexKey]);
         Tag::makeAllSearchable();
 
         $command = $this->artisan('scout:update', [
@@ -125,12 +139,7 @@ class ScoutUpdateCommandTest extends TestCase
 
         $command->execute();
 
-        $tagInstance = new Tag;
-
-        /** @var \Laravel\Scout\Engines\MeiliSearchEngine|\Meilisearch\Client $tagSearchEngine */
-        $tagSearchEngine = $tagInstance->searchableUsing();
-
-        $tagSearchIndex = $tagSearchEngine->index($tagInstance->searchableAs());
+        $tagSearchIndex = $tagSearchEngine->index($tagSearchIndexKey);
 
         $this->assertEmpty(array_diff($tagSearchIndex->getFilterableAttributes(), ['name']));
         $this->assertEmpty(array_diff($tagSearchIndex->getSortableAttributes(), ['slug']));
