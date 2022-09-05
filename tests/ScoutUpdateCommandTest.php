@@ -80,7 +80,7 @@ class ScoutUpdateCommandTest extends TestCase
 
         $command->assertSuccessful();
 
-        $command->expectsOutputToContain('Updated attributes');
+        $command->expectsOutput("Updated attributes adding filterables and/or sortables for index posts [".Post::class."].");
 
         $command->execute();
 
@@ -106,7 +106,7 @@ class ScoutUpdateCommandTest extends TestCase
 
         $command->assertSuccessful();
 
-        $command->expectsOutputToContain('Updated attributes');
+        $command->expectsOutput("Updated attributes adding filterables and/or sortables for index users [".User::class."].");
 
         $command->execute();
 
@@ -129,7 +129,7 @@ class ScoutUpdateCommandTest extends TestCase
 
         $command->assertSuccessful();
 
-        $command->expectsOutputToContain('Updated attributes');
+        $command->expectsOutput("Updated attributes adding filterables and/or sortables for index tags [".Tag::class."].");
 
         $command->execute();
 
