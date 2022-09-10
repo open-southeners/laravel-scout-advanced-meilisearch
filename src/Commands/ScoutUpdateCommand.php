@@ -7,6 +7,7 @@ use Laravel\Scout\Searchable;
 use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableAttributes;
 use ReflectionClass;
 use ReflectionMethod;
+use MeiliSearch\Exceptions\TimeOutException;
 
 class ScoutUpdateCommand extends Command
 {
@@ -15,7 +16,8 @@ class ScoutUpdateCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'scout:update {model}';
+    protected $signature = 'scout:update {model}
+                            {--wait : Wait for task to finish to get a better result info}';
 
     /**
      * The console command description.
@@ -60,11 +62,30 @@ class ScoutUpdateCommand extends Command
 
         $searchEngineIndex = $modelSearchEngine->index($modelIndex);
 
-        $searchEngineIndex->updateFilterableAttributes($this->getFilterableAttributes($model, $modelSearchableAttribute));
+        $tasks = array_filter([
+            'Update filterable attributes' => $searchEngineIndex->updateFilterableAttributes(
+                $this->getFilterableAttributes($model, $modelSearchableAttribute)
+            )['taskUid'] ?? null,
+            'Update sortable attributes' => $searchEngineIndex->updateSortableAttributes(
+                $this->getSortableAttributes($model, $modelSearchableAttribute)
+            )['taskUid'] ?? null,
+        ]);
 
-        $searchEngineIndex->updateSortableAttributes($this->getSortableAttributes($model, $modelSearchableAttribute));
+        if (! empty($tasks) && $this->option('wait')) {
+            foreach ($tasks as $description => $taskUid) {
+                $this->components->task($description, function () use ($taskUid, $modelSearchEngine) {
+                    try {
+                        $task = $modelSearchEngine->waitForTask($taskUid);
+    
+                        return $task['status'] === 'succeeded';
+                    } catch (TimeOutException $e) {
+                        return false;
+                    }
+                });
+            }
+        }
 
-        $this->info("Updated attributes adding filterables and/or sortables for index ${modelIndex} [${modelClass}].");
+        $this->info("Index ${modelIndex} [${modelClass}] settings updated successfully.");
 
         return 0;
     }

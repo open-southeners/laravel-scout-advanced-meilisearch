@@ -42,15 +42,18 @@ class ScoutUpdateCommandTest extends TestCase
 
         $command = $this->artisan('scout:update', [
             'model' => Post::class,
+            '--wait' => true
         ]);
 
         $command->assertSuccessful();
 
-        $command->expectsOutput("Updated attributes adding filterables and/or sortables for index {$postSearchIndex->getUid()} [".Post::class.'].');
+        $command->expectsOutput(
+            sprintf("Index %s [%s] settings updated successfully.", $postSearchIndex->getUid(), Post::class)
+        );
 
         $command->execute();
 
-        $this->waitForAllSearchTasks($postInstance);
+        // $this->waitForAllSearchTasks($postInstance);
 
         $postSearchFilterableAttributes = $postSearchIndex->getFilterableAttributes();
         $postSearchSortableAttributes = $postSearchIndex->getSortableAttributes();
@@ -88,15 +91,18 @@ class ScoutUpdateCommandTest extends TestCase
 
         $command = $this->artisan('scout:update', [
             'model' => User::class,
+            '--wait' => true
         ]);
 
         $command->assertSuccessful();
 
-        $command->expectsOutput("Updated attributes adding filterables and/or sortables for index {$userSearchIndex->getUid()} [".User::class.'].');
+        $command->expectsOutput(
+            sprintf("Index %s [%s] settings updated successfully.", $userSearchIndex->getUid(), User::class)
+        );
 
         $command->execute();
 
-        $this->waitForAllSearchTasks($userInstance);
+        // $this->waitForAllSearchTasks($userInstance);
 
         $userSearchFilterableAttributes = $userSearchIndex->getFilterableAttributes();
         $userSearchSortableAttributes = $userSearchIndex->getSortableAttributes();
@@ -133,15 +139,18 @@ class ScoutUpdateCommandTest extends TestCase
 
         $command = $this->artisan('scout:update', [
             'model' => Tag::class,
+            '--wait' => true
         ]);
 
         $command->assertSuccessful();
 
-        $command->expectsOutput("Updated attributes adding filterables and/or sortables for index {$tagSearchIndex->getUid()} [".Tag::class.'].');
+        $command->expectsOutput(
+            sprintf("Index %s [%s] settings updated successfully.", $tagSearchIndex->getUid(), Tag::class)
+        );
 
         $command->execute();
 
-        $this->waitForAllSearchTasks($tagInstance);
+        // $this->waitForAllSearchTasks($tagInstance);
 
         $tagSearchFilterableAttributes = $tagSearchIndex->getFilterableAttributes();
         $tagSearchSortableAttributes = $tagSearchIndex->getSortableAttributes();
@@ -173,39 +182,5 @@ class ScoutUpdateCommandTest extends TestCase
         $command->assertFailed();
 
         $command->expectsOutput('Meilisearch is the only supported engine for the sorts and/or filters.');
-    }
-
-    /**
-     * Wait for all search engine tasks to complete for the given model instance.
-     *
-     * @param  \Laravel\Scout\Searchable  $model
-     * @return void
-     */
-    private function waitForAllSearchTasks($model)
-    {
-        /** @var \Laravel\Scout\Engines\MeiliSearchEngine|\Meilisearch\Client $searchClient */
-        $searchClient = $model->searchableUsing();
-
-        $searchClient->waitForTasks(
-            array_column($searchClient->getTasks((new TasksQuery())->setStatus(['processing']))->getResults(), 'uid')
-        );
-    }
-
-    /**
-     * Create search index for model instance.
-     *
-     * @param  \Laravel\Scout\Searchable  $model
-     * @return \MeiliSearch\Endpoints\Indexes
-     */
-    private function createIndex($model)
-    {
-        /** @var \Laravel\Scout\Engines\MeiliSearchEngine|\Meilisearch\Client $searchClient */
-        $searchClient = $model->searchableUsing();
-
-        $response = $searchClient->createIndex($model->searchableAs());
-
-        $searchClient->waitForTask($response['taskUid'] ?? $response['uid']);
-
-        return $searchClient->getIndex($response['indexUid']);
     }
 }
