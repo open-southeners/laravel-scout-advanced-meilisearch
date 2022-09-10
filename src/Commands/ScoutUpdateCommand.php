@@ -56,34 +56,9 @@ class ScoutUpdateCommand extends Command
             return 2;
         }
 
-        $modelSearchableAttribute = $this->getSearchableAttribute($model);
-
         $modelIndex = $model->searchableAs();
 
-        $searchEngineIndex = $modelSearchEngine->index($modelIndex);
-
-        $tasks = array_filter([
-            'Update filterable attributes' => $searchEngineIndex->updateFilterableAttributes(
-                $this->getFilterableAttributes($model, $modelSearchableAttribute)
-            )['taskUid'] ?? null,
-            'Update sortable attributes' => $searchEngineIndex->updateSortableAttributes(
-                $this->getSortableAttributes($model, $modelSearchableAttribute)
-            )['taskUid'] ?? null,
-        ]);
-
-        if (! empty($tasks) && $this->option('wait')) {
-            foreach ($tasks as $description => $taskUid) {
-                $this->components->task($description, function () use ($taskUid, $modelSearchEngine) {
-                    try {
-                        $task = $modelSearchEngine->waitForTask($taskUid);
-    
-                        return $task['status'] === 'succeeded';
-                    } catch (TimeOutException $e) {
-                        return false;
-                    }
-                });
-            }
-        }
+        $this->processTasks($model, $modelSearchEngine);
 
         $this->info("Index ${modelIndex} [${modelClass}] settings updated successfully.");
 
@@ -93,10 +68,72 @@ class ScoutUpdateCommand extends Command
     /**
      * Get the searchable attribute instance, false otherwise.
      *
+     * @param  \Laravel\Scout\Searchable  $model
+     * @param  \Meilisearch\Client  $engine
+     * @return void
+     */
+    protected function processTasks($model, $engine)
+    {
+        $modelSearchableAttribute = $this->getSearchableAttribute($model);
+
+        $modelIndex = $engine->index($model->searchableAs());
+
+        $tasks = array_filter([
+            'Update filterable attributes' => $modelIndex->updateFilterableAttributes(
+                $this->getFilterableAttributes($model, $modelSearchableAttribute)
+            )['taskUid'] ?? null,
+            'Update sortable attributes' => $modelIndex->updateSortableAttributes(
+                $this->getSortableAttributes($model, $modelSearchableAttribute)
+            )['taskUid'] ?? null,
+        ]);
+
+        if (empty($tasks) || ! $this->option('wait')) {
+            return;
+        }
+
+        foreach ($tasks as $description => $taskUid) {
+            if (! property_exists($this, 'components')) {
+                $taskDoneSuccessfully = $this->waitForTask($engine, $taskUid);
+
+                $this->line(
+                    $description.' done '.($taskDoneSuccessfully ? 'successfully' : 'unsuccessfully'),
+                    $taskDoneSuccessfully ? 'info' : 'error'
+                );
+
+                continue;
+            }
+
+            $this->components->task($description, function () use ($taskUid, $engine) {
+                return $this->waitForTask($engine, $taskUid);
+            });
+        }
+    }
+
+    /**
+     * Wait for task without handling timeout exception.
+     * 
+     * @param  \Meilisearch\Client  $engine
+     * @param mixed $taskUid
+     * @return bool
+     */
+    protected function waitForTask($engine, $taskUid)
+    {
+        try {
+            $task = $engine->waitForTask($taskUid);
+
+            return $task['status'] === 'succeeded';
+        } catch (TimeOutException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Get the searchable attribute instance, false otherwise.
+     *
      * @param  object  $model
      * @return false|\OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableAttributes
      */
-    public function getSearchableAttribute($model)
+    protected function getSearchableAttribute($model)
     {
         if (version_compare(PHP_VERSION, '8.0', '<')) {
             // @codeCoverageIgnoreStart
