@@ -1,6 +1,6 @@
 # Laravel Scout Advanced Meilisearch
 
-Advanced Meilisearch integration with Laravel Scout
+Advanced Meilisearch integration with Laravel Scout.
 
 ## Status
 
@@ -14,7 +14,9 @@ Install the package using Composer:
 composer require open-southeners/laravel-scout-advaced-meilisearch
 ```
 
-Then configure your already searchable models like so:
+### Filterable and sortable attributes
+
+For sending filterable and sortable attributes to your Meilisearch server, configure your already searchable models like so:
 
 ```php
 use Illuminate\Database\Eloquent\Model;
@@ -94,4 +96,28 @@ And finally run the following artisan command:
 php artisan scout:update "App\Models\User"
 ```
 
+You could also run this command with `--wait` option which tells the command to wait for the task to finish:
+
+```bash
+php artisan scout:update "App\Models\User" --wait
+```
+
 Remember to check [the official documentation about these filters and sorts](https://docs.meilisearch.com/learn/getting_started/filtering_and_sorting.html).
+
+### Dumps
+
+From v1.1 now you can also create Meilisearch data dumps (data backups that will be saved on your Meilisearch server), with the following command:
+
+```bash
+php artisan scout:dump
+```
+
+As `scout:update` command, this also have a `--wait` option:
+
+```bash
+php artisan scout:dump
+```
+
+## License
+
+This package is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
