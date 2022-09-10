@@ -24,13 +24,21 @@ class ScoutDumpCommand extends Command
     protected $description = 'Create data dump from current Meilisearch state (use ONLY with Meilisearch driver)';
 
     /**
+     * @var \Laravel\Scout\EngineManager
+     */
+    protected $engineManager;
+
+    /**
      * Create a new command instance.
      *
+     * @param \Laravel\Scout\EngineManager $engineManager
      * @return void
      */
-    public function __construct(protected EngineManager $searchEngineManager)
+    public function __construct(EngineManager $engineManager)
     {
         parent::__construct();
+
+        $this->engineManager = $engineManager;
     }
 
     /**
@@ -40,7 +48,7 @@ class ScoutDumpCommand extends Command
      */
     public function handle()
     {
-        $searchEngine = $this->searchEngineManager->engine();
+        $searchEngine = $this->engineManager->engine();
 
         if (! $searchEngine instanceof MeiliSearchEngine) {
             $this->error('Meilisearch is not the default Laravel Scout driver. This command only works with Meilisearch.');
