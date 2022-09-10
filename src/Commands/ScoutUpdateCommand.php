@@ -92,6 +92,7 @@ class ScoutUpdateCommand extends Command
         }
 
         foreach ($tasks as $description => $taskUid) {
+            // @codeCoverageIgnoreStart
             if (! property_exists($this, 'components')) {
                 $taskDoneSuccessfully = $this->waitForTask($engine, $taskUid);
 
@@ -102,6 +103,7 @@ class ScoutUpdateCommand extends Command
 
                 continue;
             }
+            // @codeCoverageIgnoreEnd
 
             $this->components->task($description, function () use ($taskUid, $engine) {
                 return $this->waitForTask($engine, $taskUid);
@@ -122,8 +124,10 @@ class ScoutUpdateCommand extends Command
             $task = $engine->waitForTask($taskUid);
 
             return $task['status'] === 'succeeded';
+        // @codeCoverageIgnoreStart
         } catch (TimeOutException $e) {
             return false;
+            // @codeCoverageIgnoreEnd
         }
     }
 

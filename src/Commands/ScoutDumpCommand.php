@@ -62,8 +62,10 @@ class ScoutDumpCommand extends Command
         if ($this->option('wait')) {
             try {
                 $task = $searchEngine->waitForTask($task['taskUid'] ?? $task['uid']);
+            // @codeCoverageIgnoreStart
             } catch (TimeOutException $e) {
                 $this->warn('Waiting for Meilisearch task timed out.');
+                // @codeCoverageIgnoreEnd
             }
         }
 
