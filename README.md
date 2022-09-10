@@ -115,8 +115,10 @@ php artisan scout:dump
 As `scout:update` command, this also have a `--wait` option:
 
 ```bash
-php artisan scout:dump
+php artisan scout:dump --wait
 ```
+
+[Read more about Meilisearch dumps here](https://docs.meilisearch.com/learn/advanced/dumps.html).
 
 ## License
 
