@@ -4,6 +4,7 @@ namespace OpenSoutheners\LaravelScoutAdvancedMeilisearch;
 
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Commands\ScoutUpdateCommand;
+use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Commands\ScoutDumpCommand;
 
 class ServiceProvider extends BaseServiceProvider
 {
@@ -17,6 +18,7 @@ class ServiceProvider extends BaseServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 ScoutUpdateCommand::class,
+                ScoutDumpCommand::class,
             ]);
         }
     }
