@@ -22,6 +22,6 @@ class ScoutKeyCommandTest extends TestCase
 
         // $command->execute();
 
-        $this->assertEquals(last($this->searchEngine()->getRawKeys()['results'])['name'], 'films.search');
+        $this->assertEquals(head($this->searchEngine()->getRawKeys()['results'])['name'], 'films.search');
     }
 }
