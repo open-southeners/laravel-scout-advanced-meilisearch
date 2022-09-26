@@ -52,16 +52,10 @@ class ScoutKeyCommand extends MeilisearchCommand
             return $exitCode;
         }
 
-        if (! $this->argument('key') && ! $this->option('create') && ! $this->option('update') && ! $this->option('delete')) {
-            $this->error('You need to specify an action or pass a key for this command.');
-
-            return 2;
-        }
-
         if (($this->option('update') || $this->option('delete')) && ! $this->argument('key')) {
             $this->error('You need to pass a key value or UUID to be able to perform this action.');
 
-            return 3;
+            return 2;
         }
 
         return $this->handleAction();
@@ -78,7 +72,7 @@ class ScoutKeyCommand extends MeilisearchCommand
         $task = null;
 
         switch (true) {
-            case $this->option('update'):
+            case $this->option('delete'):
                 $action = 'deletion';
                 $this->handleDeletion();
                 break;
@@ -98,7 +92,7 @@ class ScoutKeyCommand extends MeilisearchCommand
         if ($action !== 'deletion' && $task && ! $task->getUid()) {
             $this->error('Something went wrong...');
 
-            return 4;
+            return 3;
         }
 
         $this->info(sprintf('Key %s action performed successfully!', $action));
@@ -135,11 +129,17 @@ class ScoutKeyCommand extends MeilisearchCommand
     /**
      * Handle API key deletion.
      *
-     * @return array
+     * @return void
      */
     protected function handleDeletion()
     {
-        return $this->searchEngine->deleteKey($this->argument('key'));
+        $key = $this->argument('key');
+
+        if (! $this->confirm(sprintf('Are you sure you want to delete "%s" API key?', $key))) {
+            return;
+        }
+
+        $this->searchEngine->deleteKey($key);
     }
 
     /**

@@ -86,6 +86,7 @@ class MeilisearchCommand extends Command
     /**
      * Prompt the user for comma-delimited input with auto completion.
      * 
+     * @codeCoverageIgnore
      * @param string $question
      * @param array $choices
      * @param string|null $default

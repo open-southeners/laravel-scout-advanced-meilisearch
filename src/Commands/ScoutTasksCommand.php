@@ -38,7 +38,7 @@ class ScoutTasksCommand extends MeilisearchCommand
         $tasksResults = $tasks->getResults();
 
         if (empty($tasksResults)) {
-            $this->warn('No pending tasks found.');
+            $this->warn(sprintf('Tasks not found with status "%s".', $taskStatusFilter));
 
             return 2;
         }
