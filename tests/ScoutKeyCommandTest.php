@@ -20,7 +20,7 @@ class ScoutKeyCommandTest extends TestCase
 
         $command->expectsOutput('Key creation action performed successfully!');
 
-        // $command->execute();
+        $command->execute();
 
         $this->assertEquals(head($this->searchEngine()->getRawKeys()['results'])['name'], 'films.search');
     }
