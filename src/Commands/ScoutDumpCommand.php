@@ -2,12 +2,9 @@
 
 namespace OpenSoutheners\LaravelScoutAdvancedMeilisearch\Commands;
 
-use Illuminate\Console\Command;
-use Laravel\Scout\EngineManager;
-use Laravel\Scout\Engines\MeiliSearchEngine;
 use MeiliSearch\Exceptions\TimeOutException;
 
-class ScoutDumpCommand extends Command
+class ScoutDumpCommand extends MeilisearchCommand
 {
     /**
      * The name and signature of the console command.
@@ -24,50 +21,17 @@ class ScoutDumpCommand extends Command
     protected $description = 'Create data dump from current Meilisearch state (use ONLY with Meilisearch driver)';
 
     /**
-     * @var \Laravel\Scout\EngineManager
-     */
-    protected $engineManager;
-
-    /**
-     * Create a new command instance.
-     *
-     * @param \Laravel\Scout\EngineManager $engineManager
-     * @return void
-     */
-    public function __construct(EngineManager $engineManager)
-    {
-        parent::__construct();
-
-        $this->engineManager = $engineManager;
-    }
-
-    /**
      * Execute the console command.
      *
      * @return int
      */
     public function handle()
     {
-        $searchEngine = $this->engineManager->engine();
-
-        if (! $searchEngine instanceof MeiliSearchEngine) {
-            $this->error('Meilisearch is not the default Laravel Scout driver. This command only works with Meilisearch.');
-
-            return 1;
+        if ($exitCode = $this->checkUsingMeilisearch()) {
+            return $exitCode;
         }
 
-        /** @var \Laravel\Scout\Engines\MeiliSearchEngine|\MeiliSearch\Client $searchEngine */
-        $task = $searchEngine->createDump();
-
-        if ($this->option('wait')) {
-            try {
-                $task = $searchEngine->waitForTask($task['taskUid'] ?? $task['uid']);
-            // @codeCoverageIgnoreStart
-            } catch (TimeOutException $e) {
-                $this->warn('Waiting for Meilisearch task timed out.');
-                // @codeCoverageIgnoreEnd
-            }
-        }
+        $task = $this->gracefullyWaitForTask($this->searchEngine->createDump());
 
         $this->info(sprintf('Data dump created successfully with task status "%s".', $task['status']));
 
