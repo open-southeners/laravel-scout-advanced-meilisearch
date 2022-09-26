@@ -63,7 +63,7 @@ class ScoutKeysCommand extends MeilisearchCommand
                 'actions' => implode(',', $item['actions']),
                 'indexes' => implode(',', $item['indexes']),
                 'key' => $item['key'],
-                'expiresAt' => $item['expiresAt'] ? Carbon::make($item['expiresAt'])->diffForHumans() : 'never',
+                'expiresAt' => $item['expiresAt'] ? Carbon::make($item['expiresAt'])->locale('en')->diffForHumans() : 'never',
             ];
 
             if ($this->argument('key')) {
