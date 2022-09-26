@@ -2,14 +2,12 @@
 
 namespace OpenSoutheners\LaravelScoutAdvancedMeilisearch\Commands;
 
-use Illuminate\Console\Command;
 use Laravel\Scout\Searchable;
 use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableAttributes;
 use ReflectionClass;
 use ReflectionMethod;
-use MeiliSearch\Exceptions\TimeOutException;
 
-class ScoutUpdateCommand extends Command
+class ScoutUpdateCommand extends MeilisearchCommand
 {
     /**
      * The name and signature of the console command.
@@ -78,7 +76,14 @@ class ScoutUpdateCommand extends Command
 
         $modelIndex = $engine->index($model->searchableAs());
 
+        ;
         $tasks = array_filter([
+            'Update searchable attributes' => $modelIndex->updateSearchableAttributes(
+                $this->getSearchableAttributes($model, $modelSearchableAttribute)
+            )['taskUid'] ?? null,
+            'Update displayable attributes' => $modelIndex->updateDisplayedAttributes(
+                $this->getDisplayableAttributes($model, $modelSearchableAttribute)
+            )['taskUid'] ?? null,
             'Update filterable attributes' => $modelIndex->updateFilterableAttributes(
                 $this->getFilterableAttributes($model, $modelSearchableAttribute)
             )['taskUid'] ?? null,
@@ -94,7 +99,7 @@ class ScoutUpdateCommand extends Command
         foreach ($tasks as $description => $taskUid) {
             // @codeCoverageIgnoreStart
             if (! property_exists($this, 'components')) {
-                $taskDoneSuccessfully = $this->waitForTask($engine, $taskUid);
+                $taskDoneSuccessfully = $this->hasTaskSucceed($this->gracefullyWaitForTask($taskUid));
 
                 $this->line(
                     $description.' done '.($taskDoneSuccessfully ? 'successfully' : 'unsuccessfully'),
@@ -105,29 +110,9 @@ class ScoutUpdateCommand extends Command
             }
             // @codeCoverageIgnoreEnd
 
-            $this->components->task($description, function () use ($taskUid, $engine) {
-                return $this->waitForTask($engine, $taskUid);
+            $this->components->task($description, function () use ($taskUid) {
+                return $this->hasTaskSucceed($this->gracefullyWaitForTask($taskUid));
             });
-        }
-    }
-
-    /**
-     * Wait for task without handling timeout exception.
-     * 
-     * @param  \Meilisearch\Client  $engine
-     * @param mixed $taskUid
-     * @return bool
-     */
-    protected function waitForTask($engine, $taskUid)
-    {
-        try {
-            $task = $engine->waitForTask($taskUid);
-
-            return $task['status'] === 'succeeded';
-        // @codeCoverageIgnoreStart
-        } catch (TimeOutException $e) {
-            return false;
-            // @codeCoverageIgnoreEnd
         }
     }
 
@@ -157,6 +142,46 @@ class ScoutUpdateCommand extends Command
         }
 
         return head($modelSearchableAttributes)->newInstance();
+    }
+
+    /**
+     * Get attributes that are searchable from attribute or model.
+     *
+     * @param  \Laravel\Scout\Searchable  $model
+     * @param  false|\OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableAttributes  $attribute
+     * @return array
+     */
+    protected function getSearchableAttributes($model, $attribute)
+    {
+        if ($attribute) {
+            return $attribute->getSearchableAttributes();
+        }
+
+        if (method_exists($model, 'searchDisplayableAttributes')) {
+            return array_diff(array_keys($model->toSearchableArray()), $model->searchDisplayableAttributes());
+        }
+
+        return [];
+    }
+    
+    /**
+     * Get attributes that are searchable from attribute or model.
+     *
+     * @param  \Laravel\Scout\Searchable  $model
+     * @param  false|\OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableAttributes  $attribute
+     * @return array
+     */
+    protected function getDisplayableAttributes($model, $attribute)
+    {
+        if ($attribute) {
+            return $attribute->getDisplayableAttributes();
+        }
+
+        if (method_exists($model, 'searchDisplayableAttributes')) {
+            return $model->searchDisplayableAttributes();
+        }
+
+        return [];
     }
 
     /**
