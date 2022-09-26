@@ -76,20 +76,27 @@ class ScoutUpdateCommand extends MeilisearchCommand
 
         $modelIndex = $engine->index($model->searchableAs());
 
-        $tasks = array_filter([
-            'Update searchable attributes' => $modelIndex->updateSearchableAttributes(
-                $this->getSearchableAttributes($model, $modelSearchableAttribute)
-            )['taskUid'] ?? null,
-            'Update displayable attributes' => $modelIndex->updateDisplayedAttributes(
-                $this->getDisplayableAttributes($model, $modelSearchableAttribute)
-            )['taskUid'] ?? null,
-            'Update filterable attributes' => $modelIndex->updateFilterableAttributes(
-                $this->getFilterableAttributes($model, $modelSearchableAttribute)
-            )['taskUid'] ?? null,
-            'Update sortable attributes' => $modelIndex->updateSortableAttributes(
-                $this->getSortableAttributes($model, $modelSearchableAttribute)
-            )['taskUid'] ?? null,
-        ]);
+        $tasks = [];
+
+        if (! empty($searchableAttributes = $this->getSearchableAttributes($model, $modelSearchableAttribute))) {
+            $tasks['Update searchable attributes'] = $modelIndex
+                ->updateSearchableAttributes($searchableAttributes)['taskUid'] ?? null;
+        }
+
+        if (! empty($displayedAttributes = $this->getDisplayableAttributes($model, $modelSearchableAttribute))) {
+            $tasks['Update displayable attributes'] = $modelIndex
+            ->updateDisplayedAttributes($displayedAttributes)['taskUid'] ?? null;
+        }
+
+        if (! empty($filterableAttributes = $this->getFilterableAttributes($model, $modelSearchableAttribute))) {
+            $tasks['Update filterable attributes'] = $modelIndex
+            ->updateFilterableAttributes($filterableAttributes)['taskUid'] ?? null;
+        }
+
+        if (! empty($sortableAttributes = $this->getSortableAttributes($model, $modelSearchableAttribute))) {
+            $tasks['Update sortable attributes'] = $modelIndex
+                ->updateSortableAttributes($sortableAttributes)['taskUid'] ?? null;
+        }
 
         if (empty($tasks) || ! $this->option('wait')) {
             return;
@@ -162,7 +169,7 @@ class ScoutUpdateCommand extends MeilisearchCommand
 
         return [];
     }
-    
+
     /**
      * Get attributes that are searchable from attribute or model.
      *
