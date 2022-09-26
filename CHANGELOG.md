@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2022-09-26
+
+### Added
+
+- New `scout:keys` command for API keys lookup on Meilisearch
+- New `scout:key` command for API keys creation, modification and deletion on Meilisearch
+- New `scout:tasks` command for listing tasks by status from Meilisearch (default to pending tasks list)
+- Displayable & searchable attributes: https://docs.meilisearch.com/learn/configuration/displayed_searchable_attributes.html#searchable-fields
+
+### Changed
+
+- `scout:update` command now adding searchable & displayable fields to models (also through `ScoutSearchableAttributes` PHP attribute class)
+- All command reusing code from new `MeilisearchCommand`
+
 ## [1.1.0] - 2022-09-10
 
 ### Added
