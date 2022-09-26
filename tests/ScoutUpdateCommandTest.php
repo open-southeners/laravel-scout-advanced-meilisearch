@@ -7,7 +7,6 @@ use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Tests\Fixtures\Country;
 use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Tests\Fixtures\Post;
 use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Tests\Fixtures\Tag;
 use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Tests\Fixtures\User;
-use MeiliSearch\Contracts\TasksQuery;
 
 class ScoutUpdateCommandTest extends TestCase
 {
@@ -52,8 +51,6 @@ class ScoutUpdateCommandTest extends TestCase
         );
 
         $command->execute();
-
-        // $this->waitForAllSearchTasks($postInstance);
 
         $postSearchFilterableAttributes = $postSearchIndex->getFilterableAttributes();
         $postSearchSortableAttributes = $postSearchIndex->getSortableAttributes();
@@ -102,8 +99,6 @@ class ScoutUpdateCommandTest extends TestCase
 
         $command->execute();
 
-        // $this->waitForAllSearchTasks($userInstance);
-
         $userSearchFilterableAttributes = $userSearchIndex->getFilterableAttributes();
         $userSearchSortableAttributes = $userSearchIndex->getSortableAttributes();
 
@@ -149,8 +144,6 @@ class ScoutUpdateCommandTest extends TestCase
         );
 
         $command->execute();
-
-        // $this->waitForAllSearchTasks($tagInstance);
 
         $tagSearchFilterableAttributes = $tagSearchIndex->getFilterableAttributes();
         $tagSearchSortableAttributes = $tagSearchIndex->getSortableAttributes();

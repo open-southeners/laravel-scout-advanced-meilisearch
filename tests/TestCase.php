@@ -6,9 +6,15 @@ use Laravel\Scout\ScoutServiceProvider;
 use OpenSoutheners\LaravelScoutAdvancedMeilisearch\ServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 use MeiliSearch\Contracts\TasksQuery;
+use Laravel\Scout\EngineManager;
 
 abstract class TestCase extends Orchestra
 {
+    /**
+     * @var \Laravel\Scout\Engines\MeiliSearchEngine|\MeiliSearch\Client|null
+     */
+    protected $searchEngine;
+
     /**
      * Get package providers.
      *
@@ -83,5 +89,19 @@ abstract class TestCase extends Orchestra
         $searchClient->waitForTask($response['taskUid'] ?? $response['uid']);
 
         return $searchClient->getIndex($response['indexUid']);
+    }
+
+    /**
+     * Get Meilisearch search engine from Laravel Scout.
+     * 
+     * @return \Laravel\Scout\Engines\MeiliSearchEngine|\MeiliSearch\Client
+     */
+    protected function searchEngine()
+    {
+        if (! $this->searchEngine) {
+            $this->searchEngine = app(EngineManager::class)->engine('meilisearch');
+        }
+
+        return $this->searchEngine;
     }
 }

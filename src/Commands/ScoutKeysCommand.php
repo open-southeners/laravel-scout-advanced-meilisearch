@@ -50,7 +50,7 @@ class ScoutKeysCommand extends MeilisearchCommand
         }
 
         if (empty($dataResult)) {
-            $this->alert('No API keys found.');
+            $this->error('No API keys found.');
 
             return 2;
         }
