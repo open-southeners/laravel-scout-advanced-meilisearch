@@ -30,8 +30,6 @@ class ScoutKeysCommandTest extends TestCase
         $command->expectsTable([
             'uid', 'name', 'description', 'actions', 'indexes', 'key', 'expiresAt',
         ], $apiKeysArr);
-
-        $command->execute();
     }
 
     public function testScoutKeysCommandShowsSingleApiKeyOnATableWhenUidProvided()
@@ -58,18 +56,25 @@ class ScoutKeysCommandTest extends TestCase
         $command->expectsTable([
             'name', 'description', 'actions', 'indexes', 'key', 'expiresAt',
         ], $apiKeysArr);
-
-        $command->execute();
     }
 
     public function testScoutKeysCommandShowsNoApiKeyFoundMessageWhenWrongUidProvided()
     {
-        $command = $this->artisan('scout:keys', ['key' => 'blablabla']);   
+        $command = $this->artisan('scout:keys', ['key' => 'blablabla']);
 
         $command->assertExitCode(2);
 
         $command->expectsOutput('No API keys found.');
+    }
+    
+    public function testScoutKeysCommandShowsWrongEngineWhenNotUsingMeilisearch()
+    {
+        config(['scout.driver' => 'collection']);
 
-        $command->execute();
+        $command = $this->artisan('scout:keys');
+
+        $command->assertExitCode(1);
+
+        $command->expectsOutput('Meilisearch is not the default Laravel Scout driver. This command only works with Meilisearch.');
     }
 }
