@@ -76,7 +76,6 @@ class ScoutUpdateCommand extends MeilisearchCommand
 
         $modelIndex = $engine->index($model->searchableAs());
 
-        ;
         $tasks = array_filter([
             'Update searchable attributes' => $modelIndex->updateSearchableAttributes(
                 $this->getSearchableAttributes($model, $modelSearchableAttribute)

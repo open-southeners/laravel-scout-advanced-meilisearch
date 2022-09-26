@@ -114,7 +114,7 @@ class ScoutKeyCommand extends MeilisearchCommand
     protected function handleCreation()
     {
         return $this->searchEngine->createKey(
-            $this->getKeyDataFromOptions(null, true)
+            $this->getKeyDataFromOptions()
         );
     }
 
@@ -168,7 +168,6 @@ class ScoutKeyCommand extends MeilisearchCommand
      * Get creation data options from key data.
      *
      * @param  array  $originalOptions
-     * @param  \MeiliSearch\Endpoints\Keys|array  $keyData
      * @param  array  $options
      * @return void
      */

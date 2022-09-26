@@ -46,7 +46,7 @@ class ScoutTasksCommand extends MeilisearchCommand
         $tasksResultsHeaders = ['uid', 'indexUid', 'type', 'duration', 'enqueuedAt', 'startedAt', 'finishedAt'];
 
         if ($taskStatusFilter === 'enqueued') {
-            unset($tasksResultsHeaders['duration']);
+            unset($tasksResultsHeaders[3]);
         }
 
         $this->table($tasksResultsHeaders, array_map(function ($task) {
