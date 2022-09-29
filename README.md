@@ -120,6 +120,10 @@ php artisan scout:dump --wait
 
 [Read more about Meilisearch dumps here](https://docs.meilisearch.com/learn/advanced/dumps.html).
 
+## Partners
+
+[![skore logo](https://github.com/open-southeners/partners/raw/main/logos/skore_logo.png)](https://getskore.com)
+
 ## License
 
 This package is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
