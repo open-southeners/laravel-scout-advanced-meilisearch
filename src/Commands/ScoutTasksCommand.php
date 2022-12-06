@@ -37,7 +37,7 @@ class ScoutTasksCommand extends MeilisearchCommand
         $taskStatusFilter = $this->option('status');
 
         $tasks = $this->searchEngine->getTasks(
-            (new TasksQuery())->setStatus([$taskStatusFilter])->setLimit($this->option('limit'))
+            (new TasksQuery())->setStatuses([$taskStatusFilter])->setLimit($this->option('limit'))
         );
 
         $tasksResults = $tasks->getResults();
