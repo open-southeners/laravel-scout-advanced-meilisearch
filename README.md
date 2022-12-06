@@ -11,7 +11,7 @@ Advanced Meilisearch integration with Laravel Scout.
 Install the package using Composer:
 
 ```
-composer require open-southeners/laravel-scout-advaced-meilisearch
+composer require meilisearch/meilisearch-php:^0.25 open-southeners/laravel-scout-advaced-meilisearch
 ```
 
 ### Filterable and sortable attributes
