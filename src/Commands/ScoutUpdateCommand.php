@@ -85,12 +85,12 @@ class ScoutUpdateCommand extends MeilisearchCommand
 
         if (! empty($displayedAttributes = $this->getDisplayableAttributes($model, $modelSearchableAttribute))) {
             $tasks['Update displayable attributes'] = $modelIndex
-            ->updateDisplayedAttributes($displayedAttributes)['taskUid'] ?? null;
+                ->updateDisplayedAttributes($displayedAttributes)['taskUid'] ?? null;
         }
 
         if (! empty($filterableAttributes = $this->getFilterableAttributes($model, $modelSearchableAttribute))) {
             $tasks['Update filterable attributes'] = $modelIndex
-            ->updateFilterableAttributes($filterableAttributes)['taskUid'] ?? null;
+                ->updateFilterableAttributes($filterableAttributes)['taskUid'] ?? null;
         }
 
         if (! empty($sortableAttributes = $this->getSortableAttributes($model, $modelSearchableAttribute))) {

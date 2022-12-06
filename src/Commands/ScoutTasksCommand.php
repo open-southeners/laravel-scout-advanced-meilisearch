@@ -23,6 +23,11 @@ class ScoutTasksCommand extends MeilisearchCommand
      */
     protected $description = 'Get Meilisearch tasks that are pending';
 
+    /**
+     * Execute the console command.
+     *
+     * @return int
+     */
     public function handle()
     {
         if ($exitCode = $this->checkUsingMeilisearch()) {
@@ -62,5 +67,7 @@ class ScoutTasksCommand extends MeilisearchCommand
 
             return $task;
         }, $tasksResults));
+
+        return 0;
     }
 }
