@@ -3,6 +3,8 @@
 namespace OpenSoutheners\LaravelScoutAdvancedMeilisearch;
 
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
+use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Commands\ScoutTasksCancelCommand;
+use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Commands\ScoutTasksPruneCommand;
 use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Commands\ScoutUpdateCommand;
 use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Commands\ScoutDumpCommand;
 use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Commands\ScoutKeyCommand;
@@ -24,6 +26,8 @@ class ServiceProvider extends BaseServiceProvider
                 ScoutKeysCommand::class,
                 ScoutUpdateCommand::class,
                 ScoutTasksCommand::class,
+                ScoutTasksCancelCommand::class,
+                ScoutTasksPruneCommand::class,
                 ScoutDumpCommand::class,
             ]);
         }

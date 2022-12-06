@@ -43,11 +43,7 @@ class ScoutTasksPruneCommand extends MeilisearchCommand
             (new DeleteTasksQuery)->setStatuses($deleteTasksWithStatuses)
         )['taskUid'] ?? null;
 
-        if (empty($taskUid) || ! $this->option('wait')) {
-            return 0;
-        }
-
-        if (! $this->hasTaskSucceed($this->gracefullyWaitForTask($taskUid))) {
+        if ($this->option('wait') && ! $this->hasTaskSucceed($this->gracefullyWaitForTask($taskUid))) {
             $this->error(sprintf('Tasks prune failed with task UID "%s"', $taskUid));
 
             return 2;

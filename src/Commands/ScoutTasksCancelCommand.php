@@ -13,11 +13,11 @@ class ScoutTasksCancelCommand extends MeilisearchCommand
      * @var string
      */
     protected $signature = 'scout:tasks-cancel {tasks? : Tasks UIDs to cancel (one or comma delimited list)}
-                            {--before-enqueued : Cancel tasks that were enqueued before date (enqueuedAt)}
-                            {--after-enqueued : Cancel tasks that were enqueued after date (enqueuedAt)}
-                            {--before-started : Cancel tasks that were started before date (startedAt)}
-                            {--after-started : Cancel tasks that were started after date (startedAt)}
-                            {--types : Cancel tasks by types (one or comma separated list)}
+                            {--before-enqueued= : Cancel tasks that were enqueued before date (enqueuedAt)}
+                            {--after-enqueued= : Cancel tasks that were enqueued after date (enqueuedAt)}
+                            {--before-started= : Cancel tasks that were started before date (startedAt)}
+                            {--after-started= : Cancel tasks that were started after date (startedAt)}
+                            {--types= : Cancel tasks by types (one or comma separated list)}
                             {--wait : Wait for task to finish to get a better result info}';
 
     /**
