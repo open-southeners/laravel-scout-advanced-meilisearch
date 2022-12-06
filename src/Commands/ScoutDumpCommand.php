@@ -2,8 +2,6 @@
 
 namespace OpenSoutheners\LaravelScoutAdvancedMeilisearch\Commands;
 
-use MeiliSearch\Exceptions\TimeOutException;
-
 class ScoutDumpCommand extends MeilisearchCommand
 {
     /**
