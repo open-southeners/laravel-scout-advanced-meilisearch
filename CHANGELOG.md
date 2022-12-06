@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0] - 2022-12-06
+
+### Added
+
+- New `scout:tasks-cancel` command to cancel tasks
+- New `scout:tasks-prune` command to remove succeeded and cancelled tasks (can optionally include failed with option `--include-failed`)
+
+### Changed
+
+- This package now enforces official's Meilisearch PHP version depending on its own needs
+
 ## [2.0.2] - 2022-12-06
 
 ### Fixed
