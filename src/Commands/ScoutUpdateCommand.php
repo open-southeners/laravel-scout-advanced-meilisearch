@@ -58,7 +58,7 @@ class ScoutUpdateCommand extends MeilisearchCommand
 
         $this->processTasks($model, $modelSearchEngine);
 
-        $this->info("Index ${modelIndex} [${modelClass}] settings updated successfully.");
+        $this->info("Index {$modelIndex} [{$modelClass}] settings updated successfully.");
 
         return 0;
     }

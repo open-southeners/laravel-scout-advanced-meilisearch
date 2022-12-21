@@ -106,7 +106,7 @@ class MeilisearchCommand extends Command
                 $inputArrWithoutLast = implode(',', $inputArrWithoutLast);
 
                 $actions = array_map(function ($action) use ($inputArrWithoutLast) {
-                    return "${inputArrWithoutLast},${action}";
+                    return "{$inputArrWithoutLast},{$action}";
                 }, $actions);
             }
 
