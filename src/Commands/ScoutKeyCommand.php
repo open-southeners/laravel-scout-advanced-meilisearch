@@ -179,7 +179,7 @@ class ScoutKeyCommand extends MeilisearchCommand
 
         $options['indexes'] = explode(',', $this->askWithCompletionList(
             'Comma separated list of indexes the key is authorized to act on',
-            array_column($this->searchEngine->getAllRawIndexes()['results'] ?? [], 'uid'),
+            array_column($this->searchEngine->getIndexes()['results'] ?? [], 'uid'),
             implode(',', $originalOptions['indexes'] ?? ['*'])
         ));
 
