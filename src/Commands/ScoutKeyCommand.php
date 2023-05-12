@@ -166,7 +166,6 @@ class ScoutKeyCommand extends MeilisearchCommand
      * Get creation data options from key data.
      *
      * @param  array  $originalOptions
-     * @param  array  $options
      * @return void
      */
     protected function getDataOptionsFromKeyCreate($originalOptions, array &$options)
@@ -179,7 +178,7 @@ class ScoutKeyCommand extends MeilisearchCommand
 
         $options['indexes'] = explode(',', $this->askWithCompletionList(
             'Comma separated list of indexes the key is authorized to act on',
-            array_column($this->searchEngine->getIndexes()['results'] ?? [], 'uid'),
+            array_column($this->searchEngine->getIndexes()->toArray()['results'] ?? [], 'uid'),
             implode(',', $originalOptions['indexes'] ?? ['*'])
         ));
 
@@ -198,7 +197,6 @@ class ScoutKeyCommand extends MeilisearchCommand
      *
      * @param  array  $originalOptions
      * @param  \MeiliSearch\Endpoints\Keys|array  $keyData
-     * @param  array  $options
      * @return void
      */
     protected function getDataOptionsFromKeyUpdate($originalOptions, $keyData, array &$options)
