@@ -2,16 +2,16 @@
 
 namespace OpenSoutheners\LaravelScoutAdvancedMeilisearch\Tests;
 
+use Laravel\Scout\EngineManager;
 use Laravel\Scout\ScoutServiceProvider;
+use MeiliSearch\Contracts\TasksQuery;
 use OpenSoutheners\LaravelScoutAdvancedMeilisearch\ServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
-use MeiliSearch\Contracts\TasksQuery;
-use Laravel\Scout\EngineManager;
 
 abstract class TestCase extends Orchestra
 {
     /**
-     * @var \Laravel\Scout\Engines\MeiliSearchEngine|\MeiliSearch\Client|null
+     * @var \Laravel\Scout\Engines\MeilisearchEngine|\MeiliSearch\Client|null
      */
     protected $searchEngine;
 
@@ -65,7 +65,7 @@ abstract class TestCase extends Orchestra
      */
     protected function waitForAllSearchTasks($model)
     {
-        /** @var \Laravel\Scout\Engines\MeiliSearchEngine|\Meilisearch\Client $searchClient */
+        /** @var \Laravel\Scout\Engines\MeilisearchEngine|\Meilisearch\Client $searchClient */
         $searchClient = $model->searchableUsing();
 
         $searchClient->waitForTasks(
@@ -81,7 +81,7 @@ abstract class TestCase extends Orchestra
      */
     protected function createIndex($model)
     {
-        /** @var \Laravel\Scout\Engines\MeiliSearchEngine|\Meilisearch\Client $searchClient */
+        /** @var \Laravel\Scout\Engines\MeilisearchEngine|\Meilisearch\Client $searchClient */
         $searchClient = $model->searchableUsing();
 
         $response = $searchClient->createIndex($model->searchableAs());
@@ -93,8 +93,8 @@ abstract class TestCase extends Orchestra
 
     /**
      * Get Meilisearch search engine from Laravel Scout.
-     * 
-     * @return \Laravel\Scout\Engines\MeiliSearchEngine|\MeiliSearch\Client
+     *
+     * @return \Laravel\Scout\Engines\MeilisearchEngine|\MeiliSearch\Client
      */
     protected function searchEngine()
     {

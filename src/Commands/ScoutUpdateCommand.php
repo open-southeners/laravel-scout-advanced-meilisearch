@@ -48,7 +48,7 @@ class ScoutUpdateCommand extends MeilisearchCommand
         /** @var \Meilisearch\Client $modelSearchEngine */
         $modelSearchEngine = $model->searchableUsing();
 
-        if (get_class($modelSearchEngine) !== 'Laravel\Scout\Engines\MeiliSearchEngine') {
+        if (get_class($modelSearchEngine) !== 'Laravel\Scout\Engines\MeilisearchEngine') {
             $this->error('Meilisearch is the only supported engine for the sorts and/or filters.');
 
             return 2;

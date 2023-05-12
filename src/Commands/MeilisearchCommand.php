@@ -4,20 +4,19 @@ namespace OpenSoutheners\LaravelScoutAdvancedMeilisearch\Commands;
 
 use Illuminate\Console\Command;
 use Laravel\Scout\EngineManager;
-use Laravel\Scout\Engines\MeiliSearchEngine;
+use Laravel\Scout\Engines\MeilisearchEngine;
 use MeiliSearch\Exceptions\TimeOutException;
 
 class MeilisearchCommand extends Command
 {
     /**
-     * @var \Laravel\Scout\Engines\Engine|\Laravel\Scout\Engines\MeiliSearchEngine|\MeiliSearch\Client
+     * @var \Laravel\Scout\Engines\Engine|\Laravel\Scout\Engines\MeilisearchEngine|\MeiliSearch\Client
      */
     protected $searchEngine;
 
     /**
      * Create a new command instance.
      *
-     * @param \Laravel\Scout\EngineManager $engineManager
      * @return void
      */
     public function __construct(EngineManager $engineManager)
@@ -29,12 +28,12 @@ class MeilisearchCommand extends Command
 
     /**
      * Check if current Scout engine is Meilisearch.
-     * 
+     *
      * @return int
      */
     protected function checkUsingMeilisearch()
     {
-        if (! $this->searchEngine instanceof MeiliSearchEngine) {
+        if (! $this->searchEngine instanceof MeilisearchEngine) {
             $this->error('Meilisearch is not the default Laravel Scout driver. This command only works with Meilisearch.');
 
             return 1;
@@ -45,8 +44,8 @@ class MeilisearchCommand extends Command
 
     /**
      * Wait for Meilisearch task to finish without throwing timeout error.
-     * 
-     * @param mixed $task
+     *
+     * @param  mixed  $task
      * @return array
      */
     protected function gracefullyWaitForTask($task)
@@ -59,7 +58,7 @@ class MeilisearchCommand extends Command
 
         try {
             $resolvedTask = $this->searchEngine->waitForTask($task['taskUid'] ?? $task['uid'] ?? $task);
-        // @codeCoverageIgnoreStart
+            // @codeCoverageIgnoreStart
         } catch (TimeOutException $e) {
             $this->warn('Waiting for Meilisearch task timed out.');
             // @codeCoverageIgnoreEnd
@@ -70,8 +69,8 @@ class MeilisearchCommand extends Command
 
     /**
      * Check if resulted task resolution has been succeeded.
-     * 
-     * @param mixed $task
+     *
+     * @param  mixed  $task
      * @return bool
      */
     protected function hasTaskSucceed($task)
@@ -85,11 +84,10 @@ class MeilisearchCommand extends Command
 
     /**
      * Prompt the user for comma-delimited input with auto completion.
-     * 
+     *
      * @codeCoverageIgnore
-     * @param string $question
-     * @param array $choices
-     * @param string|null $default
+     *
+     * @param  string|null  $default
      * @return mixed
      */
     protected function askWithCompletionList(string $question, array $choices, $default = null)

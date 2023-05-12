@@ -5,8 +5,6 @@ namespace OpenSoutheners\LaravelScoutAdvancedMeilisearch\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
-use Laravel\Scout\EngineManager;
-use Laravel\Scout\Engines\MeiliSearchEngine;
 
 class ScoutKeysCommand extends MeilisearchCommand
 {
