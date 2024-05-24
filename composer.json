@@ -19,19 +19,21 @@
         }
     ],
     "require": {
-        "php": "^8.0|^8.1|^8.2",
-        "illuminate/console": "^9.0|^10.0",
+        "php": "^8.0",
+        "illuminate/console": "^9.0 || ^10.0 || ^11.0",
         "laravel/scout": "^10.0",
         "meilisearch/meilisearch-php": "^1.0"
     },
     "require-dev": {
         "guzzlehttp/guzzle": "^7.1",
         "http-interop/http-factory-guzzle": "^1.0",
-        "nunomaduro/larastan": "^2.0",
-        "orchestra/testbench": "^7.0|^8.0",
+        "larastan/larastan": "^2.0",
+        "orchestra/testbench": "^7.0 || ^8.0 || ^9.0",
         "phpstan/phpstan": "^1.0",
-        "phpunit/phpunit": "^9.0|^10.0"
+        "phpunit/phpunit": "^9.0 || ^10.0"
     },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
     "autoload": {
         "psr-4": {
             "OpenSoutheners\\LaravelScoutAdvancedMeilisearch\\": "src"
@@ -43,10 +45,10 @@
         }
     },
     "config": {
-        "sort-packages": true,
         "allow-plugins": {
             "php-http/discovery": true
-        }
+        },
+        "sort-packages": true
     },
     "extra": {
         "laravel": {
@@ -54,6 +56,5 @@
                 "OpenSoutheners\\LaravelScoutAdvancedMeilisearch\\ServiceProvider"
             ]
         }
-    },
-    "minimum-stability": "dev"
+    }
 }
