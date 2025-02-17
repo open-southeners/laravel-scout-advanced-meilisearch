@@ -3,7 +3,7 @@
 namespace OpenSoutheners\LaravelScoutAdvancedMeilisearch\Commands;
 
 use Laravel\Scout\Searchable;
-use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableAttributes;
+use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableSettings;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -22,7 +22,7 @@ class ScoutUpdateCommand extends MeilisearchCommand
      *
      * @var string
      */
-    protected $description = 'Update filters and sorts from model attributes into the Scout engine (Meilisearch only)';
+    protected $description = 'Update Meilisearch settings from model attribute';
 
     /**
      * Execute the console command.
@@ -126,7 +126,7 @@ class ScoutUpdateCommand extends MeilisearchCommand
      * Get the searchable attribute instance, false otherwise.
      *
      * @param  object  $model
-     * @return false|\OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableAttributes
+     * @return false|\OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableSettings
      */
     protected function getSearchableAttribute($model)
     {
@@ -136,11 +136,11 @@ class ScoutUpdateCommand extends MeilisearchCommand
             // @codeCoverageIgnoreEnd
         }
 
-        $modelSearchableAttributes = (new ReflectionClass($model))->getAttributes(ScoutSearchableAttributes::class);
+        $modelSearchableAttributes = (new ReflectionClass($model))->getAttributes(ScoutSearchableSettings::class);
 
         if (empty($modelSearchableAttributes)) {
             $modelSearchableAttributes = (new ReflectionMethod($model, 'toSearchableArray'))
-                ->getAttributes(ScoutSearchableAttributes::class);
+                ->getAttributes(ScoutSearchableSettings::class);
         }
 
         if (empty($modelSearchableAttributes)) {
@@ -154,13 +154,13 @@ class ScoutUpdateCommand extends MeilisearchCommand
      * Get attributes that are searchable from attribute or model.
      *
      * @param  \Laravel\Scout\Searchable  $model
-     * @param  false|\OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableAttributes  $attribute
+     * @param  false|\OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableSettings  $attribute
      * @return array
      */
     protected function getSearchableAttributes($model, $attribute)
     {
         if ($attribute) {
-            return $attribute->getSearchableAttributes();
+            return $attribute->searchable;
         }
 
         if (method_exists($model, 'searchDisplayableAttributes')) {
@@ -174,13 +174,13 @@ class ScoutUpdateCommand extends MeilisearchCommand
      * Get attributes that are searchable from attribute or model.
      *
      * @param  \Laravel\Scout\Searchable  $model
-     * @param  false|\OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableAttributes  $attribute
+     * @param  false|\OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableSettings  $attribute
      * @return array
      */
     protected function getDisplayableAttributes($model, $attribute)
     {
         if ($attribute) {
-            return $attribute->getDisplayableAttributes();
+            return $attribute->displayable;
         }
 
         if (method_exists($model, 'searchDisplayableAttributes')) {
@@ -194,7 +194,7 @@ class ScoutUpdateCommand extends MeilisearchCommand
      * Get attributes that are filterable from attribute or model.
      *
      * @param  \Laravel\Scout\Searchable  $model
-     * @param  false|\OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableAttributes  $attribute
+     * @param  false|\OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableSettings  $attribute
      * @return array
      */
     protected function getSortableAttributes($model, $attribute)
@@ -214,7 +214,7 @@ class ScoutUpdateCommand extends MeilisearchCommand
      * Get attributes that are filterable from attribute or model.
      *
      * @param  \Laravel\Scout\Searchable  $model
-     * @param  false|\OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableAttributes  $attribute
+     * @param  false|\OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableSettings  $attribute
      * @return array
      */
     protected function getFilterableAttributes($model, $attribute)
