@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.0] - 2025-02-17
+
+### Added
+
+- `OpenSoutheners\LaravelScoutAdvancedMeilisearch\MultiSearch` class to support [multi-search](https://www.meilisearch.com/docs/learn/multi_search/performing_federated_search)
+
+### Changed
+
+- **Rename `OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableAttributes` to `OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableSettings`**
+
+### Removed
+
+- **`attributes` parameter from `ScoutSearchableSettings` attribute** (already covered by Laravel Scout)
+- **Laravel 9 support**
+- **PHP 8.0 support**
+
 ## [4.1.0] - 2024-05-24
 
 ### Added
