@@ -20,8 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - **`attributes` parameter from `ScoutSearchableSettings` attribute** (already covered by Laravel Scout)
-- **Laravel 9 support**
-- **PHP 8.0 support**
+- **Laravel 9 and 10 support**
+- **PHP 8.0 and 8.1 support**
 
 ## [4.1.0] - 2024-05-24
 
