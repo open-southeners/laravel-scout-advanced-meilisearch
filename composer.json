@@ -27,10 +27,10 @@
     "require-dev": {
         "guzzlehttp/guzzle": "^7.1",
         "http-interop/http-factory-guzzle": "^1.0",
-        "larastan/larastan": "^2.0",
-        "orchestra/testbench": "^9.0",
-        "phpstan/phpstan": "^1.0",
-        "phpunit/phpunit": "^10.0"
+        "larastan/larastan": "^3.0",
+        "orchestra/testbench": "^9.0 || ^10.0",
+        "phpstan/phpstan": "^2.0",
+        "phpunit/phpunit": "^11.0"
     },
     "minimum-stability": "stable",
     "prefer-stable": true,
