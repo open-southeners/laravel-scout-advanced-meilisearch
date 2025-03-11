@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.1.0] - 2025-03-12
+
+### Added
+
+- `setModelsPath` method on `MultiSearch` class to customise the model folder path
+
+### Fixed
+
+- `ScoutSearchableSettings` attribute when added on the method `toSearchableArray` using `MultiSearch` (with `globallySearchable` set true) didn't get through
+
 ## [5.0.0] - 2025-03-11
 
 ### Added
