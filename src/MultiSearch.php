@@ -26,6 +26,8 @@ final class MultiSearch
      * @var array<string, class-string<Model>> $indexModelMap
      */
     private array $indexModelMap = [];
+    
+    private ?string $modelsPath = null;
 
     public function __construct(EngineManager $engineManager)
     {
@@ -57,19 +59,25 @@ final class MultiSearch
      *
      * @return array<string, class-string<Model>>
      */
-    public static function getGloballySearchableModels(): array
+    public static function getGloballySearchableModels(?string $path = null): array
     {
         $models = [];
 
         $fileResults = Finder::create()
             ->files()
             ->name('*.php')
-            ->in(app_path('Models'));
-
+            ->in($path ?? app_path('Models'));
+        
         foreach ($fileResults as $file) {
-            $reflector = new ReflectionClass('App\\Models\\'.Str::beforeLast($file->getRelativePathname(), '.'));
+            if (preg_match('#^namespace\s+(.+?);$#sm', $file->getContents(), $matches)) {
+          		$baseNamespace = $matches[1];
+           	}
+            
+            $reflector = new ReflectionClass($baseNamespace.'\\'.Str::beforeLast($file->getRelativePathname(), '.'));
 
-            $attributes = $reflector->getAttributes(ScoutSearchableSettings::class);
+            $attributes = $reflector->getAttributes(ScoutSearchableSettings::class)
+                ?: ($reflector->hasMethod('toSearchableArray') ? $reflector->getMethod('toSearchableArray') : null)?->getAttributes(ScoutSearchableSettings::class)
+                ?? [];
 
             $searchableAttribute = head($attributes);
 
@@ -90,15 +98,28 @@ final class MultiSearch
         return $models;
     }
 
+    /**
+     * Set database builder query for global search.
+     */
     private function setGlobalSearchQuery(string $query): void
     {
-        foreach (static::getGloballySearchableModels() as $modelIndexUid => $modelClass) {
+        foreach (static::getGloballySearchableModels($this->modelsPath) as $modelIndexUid => $modelClass) {
             $this->indexModelMap[$modelIndexUid] = $modelClass;
 
             $this->queries[] = (new SearchQuery)
                 ->setIndexUid($modelIndexUid)
                 ->setQuery($query);
         }
+    }
+    
+    /**
+     * Customise the default path for models files.
+     */
+    public function setModelsPath(string $path): self
+    {
+        $this->modelsPath = $path;
+        
+        return $this;
     }
 
     /**

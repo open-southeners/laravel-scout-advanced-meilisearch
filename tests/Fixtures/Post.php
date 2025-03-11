@@ -29,7 +29,7 @@ class Post extends Model
      *
      * @return array
      */
-    #[ScoutSearchableSettings(filterable: ['title'], sortable: ['slug'])]
+    #[ScoutSearchableSettings(filterable: ['title'], sortable: ['slug'], globallySearchable: true)]
     public function toSearchableArray()
     {
         return [

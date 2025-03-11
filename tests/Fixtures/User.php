@@ -6,7 +6,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Scout\Searchable;
 use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableSettings;
 
-#[ScoutSearchableSettings(filterable: ['email'], sortable: ['name'])]
+#[ScoutSearchableSettings(filterable: ['email'], sortable: ['name'], globallySearchable: true)]
 class User extends Authenticatable
 {
     use Searchable;
