@@ -4,7 +4,7 @@ namespace OpenSoutheners\LaravelScoutAdvancedMeilisearch\Tests\Fixtures;
 
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;
-use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableAttributes;
+use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableSettings;
 
 class Post extends Model
 {
@@ -29,7 +29,7 @@ class Post extends Model
      *
      * @return array
      */
-    #[ScoutSearchableAttributes(filterable: ['title'], sortable: ['slug'])]
+    #[ScoutSearchableSettings(filterable: ['title'], sortable: ['slug'])]
     public function toSearchableArray()
     {
         return [
