@@ -24,7 +24,7 @@ jobs:
 
     steps:
       - name: 🏗 Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🏗 Setup Meilisearch
         run: docker run -d -p 7700:7700 getmeili/meilisearch:latest meilisearch --master-key="1234" --no-analytics
