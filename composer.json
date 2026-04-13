@@ -20,15 +20,15 @@
     ],
     "require": {
         "php": "^8.2",
-        "illuminate/console": "^11.0 || ^12.0",
-        "laravel/scout": "^10.0",
+        "illuminate/console": "^11.0 || ^12.0 || ^13.0",
+        "laravel/scout": "^11.0",
         "meilisearch/meilisearch-php": "^1.0"
     },
     "require-dev": {
         "guzzlehttp/guzzle": "^7.1",
         "http-interop/http-factory-guzzle": "^1.0",
         "larastan/larastan": "^3.0",
-        "orchestra/testbench": "^9.0 || ^10.0",
+        "orchestra/testbench": "^9.0 || ^10.0 || ^11.0",
         "phpstan/phpstan": "^2.0",
         "phpunit/phpunit": "^11.0"
     },
