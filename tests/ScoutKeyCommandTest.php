@@ -6,7 +6,11 @@ class ScoutKeyCommandTest extends TestCase
 {
     public function testScoutKeyCommandCreatesApiKeyWhenCreateOptionIsSent()
     {
-        $this->searchEngine()->waitForTask($this->searchEngine()->createIndex('films')['taskUid']);
+        $index = $this->searchEngine()->createIndex('films');
+
+        if (is_array($index)) {
+            $this->searchEngine()->waitForTask($index['taskUid'] ?? $index['uid']);
+        }
 
         $command = $this->artisan('scout:key', ['--create' => true]);
 

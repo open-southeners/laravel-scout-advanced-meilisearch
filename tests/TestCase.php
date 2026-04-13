@@ -86,6 +86,10 @@ abstract class TestCase extends Orchestra
 
         $response = $searchClient->createIndex($model->searchableAs());
 
+        if ($response instanceof \Meilisearch\Endpoints\Indexes) {
+            return $response;
+        }
+
         $searchClient->waitForTask($response['taskUid'] ?? $response['uid']);
 
         return $searchClient->getIndex($response['indexUid']);

@@ -10,9 +10,6 @@ use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Tests\Fixtures\User;
 
 class ScoutUpdateCommandTest extends TestCase
 {
-    /**
-     * @group needsPhp8
-     */
     public function testScoutUpdateCommandChangesFiltersAndSortsUsingAttributeAtMethodLevel()
     {
         Post::insert([
@@ -62,9 +59,6 @@ class ScoutUpdateCommandTest extends TestCase
         $this->assertEmpty(array_diff(['slug'], $postSearchSortableAttributes));
     }
 
-    /**
-     * @group needsPhp8
-     */
     public function testScoutUpdateCommandChangesFiltersAndSortsUsingAttributeAtClassLevel()
     {
         User::insert([
