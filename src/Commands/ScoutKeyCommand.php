@@ -101,7 +101,7 @@ class ScoutKeyCommand extends MeilisearchCommand
     /**
      * Handle API key creation.
      *
-     * @return \MeiliSearch\Endpoints\Keys
+     * @return \Meilisearch\Endpoints\Keys
      */
     protected function handleCreation()
     {
@@ -113,7 +113,7 @@ class ScoutKeyCommand extends MeilisearchCommand
     /**
      * Handle API key modification.
      *
-     * @return \MeiliSearch\Endpoints\Keys
+     * @return \Meilisearch\Endpoints\Keys
      */
     protected function handleModification()
     {
@@ -149,7 +149,7 @@ class ScoutKeyCommand extends MeilisearchCommand
     protected function getKeyDataFromOptions($key = null)
     {
         $originalOptions = array_filter($this->options());
-        /** @var \MeiliSearch\Endpoints\Keys|array $keyData */
+        /** @var \Meilisearch\Endpoints\Keys|array $keyData */
         $keyData = $key ? $this->searchEngine->getKey($key) : [];
         $options = [];
 
@@ -196,7 +196,7 @@ class ScoutKeyCommand extends MeilisearchCommand
      * Get creation/modification data options from key data.
      *
      * @param  array  $originalOptions
-     * @param  \MeiliSearch\Endpoints\Keys|array  $keyData
+     * @param  \Meilisearch\Endpoints\Keys|array  $keyData
      * @return void
      */
     protected function getDataOptionsFromKeyUpdate($originalOptions, $keyData, array &$options)

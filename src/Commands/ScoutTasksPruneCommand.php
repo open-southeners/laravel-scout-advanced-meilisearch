@@ -2,7 +2,7 @@
 
 namespace OpenSoutheners\LaravelScoutAdvancedMeilisearch\Commands;
 
-use MeiliSearch\Contracts\DeleteTasksQuery;
+use Meilisearch\Contracts\DeleteTasksQuery;
 
 class ScoutTasksPruneCommand extends MeilisearchCommand
 {

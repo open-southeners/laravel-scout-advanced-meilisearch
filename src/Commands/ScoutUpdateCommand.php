@@ -2,8 +2,11 @@
 
 namespace OpenSoutheners\LaravelScoutAdvancedMeilisearch\Commands;
 
+use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Engines\MeilisearchEngine;
 use Laravel\Scout\Searchable;
 use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableSettings;
+use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Contracts\ScoutSearchableModel;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -34,21 +37,22 @@ class ScoutUpdateCommand extends MeilisearchCommand
         $modelClass = $this->argument('model');
 
         if (
-            ! class_exists($modelClass)
-            || ! in_array(Searchable::class, class_uses($modelClass))
+            ! is_string($modelClass)
+            || ! class_exists($modelClass)
+            || ! is_a($modelClass, Model::class, true)
+            || ! in_array(Searchable::class, class_uses_recursive($modelClass), true)
         ) {
             $this->error('This model is not searchable.');
 
             return 1;
         }
 
-        /** @var \Laravel\Scout\Searchable $model */
+        /** @var Model&ScoutSearchableModel $model */
         $model = new $modelClass;
 
-        /** @var \Meilisearch\Client $modelSearchEngine */
         $modelSearchEngine = $model->searchableUsing();
 
-        if (get_class($modelSearchEngine) !== 'Laravel\Scout\Engines\MeilisearchEngine') {
+        if (! $modelSearchEngine instanceof MeilisearchEngine) {
             $this->error('Meilisearch is the only supported engine for the sorts and/or filters.');
 
             return 2;
@@ -66,15 +70,14 @@ class ScoutUpdateCommand extends MeilisearchCommand
     /**
      * Get the searchable attribute instance, false otherwise.
      *
-     * @param  \Laravel\Scout\Searchable  $model
-     * @param  \Meilisearch\Client  $engine
-     * @return void
+     * @param  Model&ScoutSearchableModel  $model
      */
-    protected function processTasks($model, $engine)
+    protected function processTasks(Model $model, MeilisearchEngine $engine): void
     {
         $modelSearchableAttribute = $this->getSearchableAttribute($model);
 
-        $modelIndex = $engine->index($model->searchableAs());
+        /** @var \Meilisearch\Endpoints\Indexes $modelIndex */
+        $modelIndex = $engine->__call('index', [$model->searchableAs()]);
 
         $tasks = [];
 
@@ -103,19 +106,6 @@ class ScoutUpdateCommand extends MeilisearchCommand
         }
 
         foreach ($tasks as $description => $taskUid) {
-            // @codeCoverageIgnoreStart
-            if (! property_exists($this, 'components')) {
-                $taskDoneSuccessfully = $this->hasTaskSucceed($this->gracefullyWaitForTask($taskUid));
-
-                $this->line(
-                    $description.' done '.($taskDoneSuccessfully ? 'successfully' : 'unsuccessfully'),
-                    $taskDoneSuccessfully ? 'info' : 'error'
-                );
-
-                continue;
-            }
-            // @codeCoverageIgnoreEnd
-
             $this->components->task($description, function () use ($taskUid) {
                 return $this->hasTaskSucceed($this->gracefullyWaitForTask($taskUid));
             });
@@ -126,45 +116,47 @@ class ScoutUpdateCommand extends MeilisearchCommand
      * Get the searchable attribute instance, false otherwise.
      *
      * @param  object  $model
-     * @return false|\OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableSettings
+     * @return \OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableSettings|false
      */
     protected function getSearchableAttribute($model)
     {
-        if (version_compare(PHP_VERSION, '8.0', '<')) {
-            // @codeCoverageIgnoreStart
-            return false;
-            // @codeCoverageIgnoreEnd
-        }
-
         $modelSearchableAttributes = (new ReflectionClass($model))->getAttributes(ScoutSearchableSettings::class);
 
-        if (empty($modelSearchableAttributes)) {
+        if ($modelSearchableAttributes === [] && method_exists($model, 'toSearchableArray')) {
             $modelSearchableAttributes = (new ReflectionMethod($model, 'toSearchableArray'))
                 ->getAttributes(ScoutSearchableSettings::class);
         }
 
-        if (empty($modelSearchableAttributes)) {
+        if ($modelSearchableAttributes === []) {
             return false;
         }
 
-        return head($modelSearchableAttributes)->newInstance();
+        $searchableAttribute = head($modelSearchableAttributes);
+
+        if ($searchableAttribute === null) {
+            return false;
+        }
+
+        return $searchableAttribute->newInstance();
     }
 
     /**
      * Get attributes that are searchable from attribute or model.
      *
-     * @param  \Laravel\Scout\Searchable  $model
+     * @param  Model&ScoutSearchableModel  $model
      * @param  false|\OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableSettings  $attribute
-     * @return array
+     * @return array<int, string>
      */
-    protected function getSearchableAttributes($model, $attribute)
+    protected function getSearchableAttributes(Model $model, $attribute): array
     {
         if ($attribute) {
-            return $attribute->searchable;
+            return array_values($attribute->searchable);
         }
 
-        if (method_exists($model, 'searchDisplayableAttributes')) {
-            return array_diff(array_keys($model->toSearchableArray()), $model->searchDisplayableAttributes());
+        $displayableAttributes = $this->callOptionalStringArrayMethod($model, 'searchDisplayableAttributes');
+
+        if ($displayableAttributes !== []) {
+            return array_values(array_diff(array_map('strval', array_keys($model->toSearchableArray())), $displayableAttributes));
         }
 
         return [];
@@ -173,60 +165,67 @@ class ScoutUpdateCommand extends MeilisearchCommand
     /**
      * Get attributes that are searchable from attribute or model.
      *
-     * @param  \Laravel\Scout\Searchable  $model
+     * @param  Model&ScoutSearchableModel  $model
      * @param  false|\OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableSettings  $attribute
-     * @return array
+     * @return array<int, string>
      */
-    protected function getDisplayableAttributes($model, $attribute)
+    protected function getDisplayableAttributes(Model $model, $attribute): array
     {
         if ($attribute) {
-            return $attribute->displayable;
+            return array_values($attribute->displayable);
         }
 
-        if (method_exists($model, 'searchDisplayableAttributes')) {
-            return $model->searchDisplayableAttributes();
-        }
-
-        return [];
+        return $this->callOptionalStringArrayMethod($model, 'searchDisplayableAttributes');
     }
 
     /**
      * Get attributes that are filterable from attribute or model.
      *
-     * @param  \Laravel\Scout\Searchable  $model
+     * @param  Model&ScoutSearchableModel  $model
      * @param  false|\OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableSettings  $attribute
-     * @return array
+     * @return array<int, string>
      */
-    protected function getSortableAttributes($model, $attribute)
+    protected function getSortableAttributes(Model $model, $attribute): array
     {
         if ($attribute) {
-            return $attribute->sortable;
+            return array_values($attribute->sortable);
         }
 
-        if (method_exists($model, 'searchableSorts')) {
-            return $model->searchableSorts();
-        }
-
-        return [];
+        return $this->callOptionalStringArrayMethod($model, 'searchableSorts');
     }
 
     /**
      * Get attributes that are filterable from attribute or model.
      *
-     * @param  \Laravel\Scout\Searchable  $model
+     * @param  Model&ScoutSearchableModel  $model
      * @param  false|\OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableSettings  $attribute
-     * @return array
+     * @return array<int, string>
      */
-    protected function getFilterableAttributes($model, $attribute)
+    protected function getFilterableAttributes(Model $model, $attribute): array
     {
         if ($attribute) {
-            return $attribute->filterable;
+            return array_values($attribute->filterable);
         }
 
-        if (method_exists($model, 'searchableFilters')) {
-            return $model->searchableFilters();
+        return $this->callOptionalStringArrayMethod($model, 'searchableFilters');
+    }
+
+    /**
+     * @param  object  $model
+     * @return array<int, string>
+     */
+    protected function callOptionalStringArrayMethod(object $model, string $method): array
+    {
+        if (! method_exists($model, $method)) {
+            return [];
         }
 
-        return [];
+        $result = call_user_func([$model, $method]);
+
+        if (! is_array($result)) {
+            return [];
+        }
+
+        return array_values(array_map('strval', $result));
     }
 }

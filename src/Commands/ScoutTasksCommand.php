@@ -3,7 +3,7 @@
 namespace OpenSoutheners\LaravelScoutAdvancedMeilisearch\Commands;
 
 use Illuminate\Support\Carbon;
-use MeiliSearch\Contracts\TasksQuery;
+use Meilisearch\Contracts\TasksQuery;
 
 class ScoutTasksCommand extends MeilisearchCommand
 {

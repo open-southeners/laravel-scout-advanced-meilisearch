@@ -4,14 +4,16 @@ namespace OpenSoutheners\LaravelScoutAdvancedMeilisearch;
 
 use Exception;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Laravel\Scout\EngineManager;
 use Laravel\Scout\Engines\MeilisearchEngine;
-use Illuminate\Support\Str;
-use Illuminate\Support\Collection;
+use Laravel\Scout\Searchable;
 use Meilisearch\Contracts\SearchQuery;
+use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableSettings;
+use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Contracts\ScoutSearchableModel;
 use ReflectionClass;
 use Symfony\Component\Finder\Finder;
-use OpenSoutheners\LaravelScoutAdvancedMeilisearch\Attributes\ScoutSearchableSettings;
 
 final class MultiSearch
 {
@@ -31,11 +33,13 @@ final class MultiSearch
 
     public function __construct(EngineManager $engineManager)
     {
-        if (! ($engineManager->engine() instanceof MeilisearchEngine)) {
+        $engine = $engineManager->engine();
+
+        if (! $engine instanceof MeilisearchEngine) {
             throw new Exception('Meilisearch is the only Scout engine that supports MultiSearch.');
         }
 
-        $this->searchEngine = $engineManager->engine();
+        $this->searchEngine = $engine;
     }
 
     /**
@@ -45,7 +49,8 @@ final class MultiSearch
      */
     public function by(string $model, string $query): self
     {
-        $indexUid = (new $model)->searchableAs();
+        $modelInstance = self::instantiateSearchableModel($model);
+        $indexUid = $modelInstance->searchableAs();
 
         $this->indexModelMap[$indexUid] = $model;
 
@@ -69,11 +74,11 @@ final class MultiSearch
             ->in($path ?? app_path('Models'));
         
         foreach ($fileResults as $file) {
-            if (preg_match('#^namespace\s+(.+?);$#sm', $file->getContents(), $matches)) {
-          		$baseNamespace = $matches[1];
-           	}
-            
-            $reflector = new ReflectionClass($baseNamespace.'\\'.Str::beforeLast($file->getRelativePathname(), '.'));
+            if (! preg_match('#^namespace\s+(.+?);$#sm', $file->getContents(), $matches)) {
+                continue;
+            }
+
+            $reflector = new ReflectionClass($matches[1].'\\'.Str::beforeLast($file->getRelativePathname(), '.'));
 
             $attributes = $reflector->getAttributes(ScoutSearchableSettings::class)
                 ?: ($reflector->hasMethod('toSearchableArray') ? $reflector->getMethod('toSearchableArray') : null)?->getAttributes(ScoutSearchableSettings::class)
@@ -92,7 +97,9 @@ final class MultiSearch
                 continue;
             }
 
-            $models[$reflector->newInstance()->searchableAs()] = $reflector->getName();
+            $model = self::instantiateSearchableModel($reflector->getName());
+
+            $models[$model->searchableAs()] = $reflector->getName();
         }
 
         return $models;
@@ -132,7 +139,7 @@ final class MultiSearch
         }
 
         $rawResults = Collection::make(
-            $this->searchEngine->multiSearch($this->queries)['results']
+            $this->performMultiSearch($this->queries)
         );
 
         if ($raw) {
@@ -141,8 +148,8 @@ final class MultiSearch
 
         $results = Collection::make();
 
-        $rawResults->each(function (array $result) use (&$results) {
-            $model = new $this->indexModelMap[$result['indexUid']];
+        foreach ($rawResults as $result) {
+            $model = self::instantiateSearchableModel($this->indexModelMap[$result['indexUid']]);
             $modelKeys = [];
 
             foreach ($result['hits'] as $resultHit) {
@@ -150,8 +157,40 @@ final class MultiSearch
             }
 
             $results = $results->merge($model->newQuery()->whereKey($modelKeys)->get());
-        });
+        }
 
         return $results;
+    }
+
+    /**
+     * @param  array<int, SearchQuery>  $queries
+     * @return array<int, array<string, mixed>>
+     */
+    private function performMultiSearch(array $queries): array
+    {
+        /** @var array{results?: array<int, array<string, mixed>>} $results */
+        $results = $this->searchEngine->__call('multiSearch', [$queries]);
+
+        return $results['results'] ?? [];
+    }
+
+    /**
+     * @param  string  $modelClass
+     * @return Model&ScoutSearchableModel
+     */
+    private static function instantiateSearchableModel(string $modelClass): Model
+    {
+        if (
+            ! class_exists($modelClass)
+            || ! is_a($modelClass, Model::class, true)
+            || ! in_array(Searchable::class, class_uses_recursive($modelClass), true)
+        ) {
+            throw new Exception(sprintf('Model [%s] is not searchable through Laravel Scout.', $modelClass));
+        }
+
+        /** @var Model&ScoutSearchableModel $model */
+        $model = new $modelClass;
+
+        return $model;
     }
 }

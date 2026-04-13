@@ -5,12 +5,12 @@ namespace OpenSoutheners\LaravelScoutAdvancedMeilisearch\Commands;
 use Illuminate\Console\Command;
 use Laravel\Scout\EngineManager;
 use Laravel\Scout\Engines\MeilisearchEngine;
-use MeiliSearch\Exceptions\TimeOutException;
+use Meilisearch\Exceptions\TimeOutException;
 
 class MeilisearchCommand extends Command
 {
     /**
-     * @var \Laravel\Scout\Engines\Engine|\Laravel\Scout\Engines\MeilisearchEngine|\MeiliSearch\Client
+     * @var \Laravel\Scout\Engines\Engine|\Laravel\Scout\Engines\MeilisearchEngine|\Meilisearch\Client
      */
     protected $searchEngine;
 

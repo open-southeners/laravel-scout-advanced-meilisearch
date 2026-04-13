@@ -3,7 +3,7 @@
 namespace OpenSoutheners\LaravelScoutAdvancedMeilisearch\Commands;
 
 use Illuminate\Support\Carbon;
-use MeiliSearch\Contracts\CancelTasksQuery;
+use Meilisearch\Contracts\CancelTasksQuery;
 
 class ScoutTasksCancelCommand extends MeilisearchCommand
 {
@@ -41,14 +41,14 @@ class ScoutTasksCancelCommand extends MeilisearchCommand
         $query = $this->applyOptionsToQuery(new CancelTasksQuery);
 
         if ($tasks = $this->argument('tasks')) {
-            $query->setIndexUids(explode(',', $tasks));
+            $query->setUids(explode(',', $tasks));
         }
 
         $taskUid = $this->searchEngine->cancelTasks($query)['taskUid'] ?? null;
 
 
         if ($this->option('wait') && ! $this->hasTaskSucceed($this->gracefullyWaitForTask($taskUid))) {
-            $this->error(sprintf('Cancelling tasks failed using task UID "%s.'));
+            $this->error(sprintf('Cancelling tasks failed using task UID "%s".', $taskUid));
 
             return 2;
         }
@@ -60,9 +60,9 @@ class ScoutTasksCancelCommand extends MeilisearchCommand
 
     /**
      * Apply filters to query from parsed command options.
-     * 
-     * @param \MeiliSearch\Contracts\CancelTasksQuery $query
-     * @return \MeiliSearch\Contracts\CancelTasksQuery
+     *
+     * @param  \Meilisearch\Contracts\CancelTasksQuery  $query
+     * @return \Meilisearch\Contracts\CancelTasksQuery
      */
     protected function applyOptionsToQuery(CancelTasksQuery $query)
     {
@@ -79,11 +79,10 @@ class ScoutTasksCancelCommand extends MeilisearchCommand
         if (isset($options['after-enqueued'])) {
             $query->setAfterEnqueuedAt(Carbon::now()->add($options['after-enqueued'])->toDateTime());
         }
-        
         if (isset($options['before-started'])) {
             $query->setBeforeStartedAt(Carbon::now()->sub($options['before-started'])->toDateTime());
         }
-        
+
         if (isset($options['after-started'])) {
             $query->setAfterStartedAt(Carbon::now()->add($options['after-started'])->toDateTime());
         }
